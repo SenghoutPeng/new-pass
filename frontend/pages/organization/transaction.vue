@@ -78,7 +78,7 @@ definePageMeta({
 const transactions = ref([])
 const totalGross = ref('0.00')
 const totalNet = ref('0.00')
-
+const config = useRuntimeConfig()
 const eventList = ref([])
 const selectedEventId = ref('')
 
@@ -121,7 +121,7 @@ const fetchTransactions = async () => {
 // Dummy fetch for event list - replace with your real API
 const fetchEventList = async () => {
   try {
-    const res = await fetch('http://localhost:8000/api/organization/events', {
+    const res = await fetch(`${config.public.apiUrl}/organization/events`, {
       credentials: 'include',
     })
     const data = await res.json()

@@ -182,13 +182,13 @@ const handleSignUp = async () => {
   loading.value = true
 
   try {
-     const response =await client(`${config.public.baseUrl}/api/organization/signup`, {
+     const response =await client(`${config.public.apiUrl}/organization/signup`, {
       method: 'POST',
       body: FormData.value,
       credentials: 'include'
     })
 
-    await client(`${config.public.baseUrl}/api/organization/login`, {
+    await client(`${config.public.apiUrl}organization/login`, {
       method: 'POST',
       body: {
         email: FormData.value.email,

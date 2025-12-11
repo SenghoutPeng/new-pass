@@ -201,7 +201,7 @@ const getAuthToken = () => {
 };
 const authToken = computed(() => getAuthToken());
 
-const { data: profileResponse, pending: pendingProfile, error: errorProfile, refresh: refreshProfile } = useFetch('http://localhost:8000/api/profile', {
+const { data: profileResponse, pending: pendingProfile, error: errorProfile, refresh: refreshProfile } = useFetch(`${config.public.apiUrl}/profile`, {
   headers: {
     'Authorization': `Bearer ${authToken.value}`,
   },
@@ -219,7 +219,7 @@ const form = ref({
   profile_image: null, // Will hold the File object
 });
 
-const profileImagePreview = ref('http://localhost:8000/storage/User/default.png'); 
+const profileImagePreview = ref(`${config.public.baseUrl}/storage/User/default.png`); 
 const savingChanges = ref(false);
 const saveError = ref(null);
 const saveSuccess = ref(null);
@@ -236,17 +236,17 @@ watch(userProfile, (newProfile) => {
       if (newProfile.profile_image.startsWith('http')) {
         profileImagePreview.value = newProfile.profile_image;
       } else {
-        profileImagePreview.value = `http://localhost:8000/storage/${newProfile.profile_image}`;
+        profileImagePreview.value = `${config.public.baseUrl}/storage/${newProfile.profile_image}`;
       }
     } else {
-      profileImagePreview.value = 'http://localhost:8000/storage/User/default.png';
+      profileImagePreview.value = `${config.public.baseUrl}/storage/User/default.png`;
     }
   }
 }, { immediate: true });
 
 
 // --- Fetch User Tickets ---
-const { data: ticketsResponse, pending: pendingTickets, error: errorTickets, refresh: refreshTickets } = useFetch('http://localhost:8000/api/get-tickets', {
+const { data: ticketsResponse, pending: pendingTickets, error: errorTickets, refresh: refreshTickets } = useFetch(`${config.public.apiUrl}/get-tickets`, {
   headers: {
     'Authorization': `Bearer ${authToken.value}`,
   },
@@ -424,7 +424,7 @@ async function submitRating() {
       rating: ratingsToSend
     };
 
-    const response = await client(`${config.public.baseUrl}/api/rating`, {
+    const response = await client(`${config.public.apiUrl}/rating`, {
       method: 'POST',
       body: payload,
       credentials: 'include'

@@ -73,7 +73,7 @@ const user = useSanctumUser()
 // Use logout from SanctumAuth
 const { logout } = useSanctumAuth()
 const client = useSanctumClient()
-
+const config = useRuntimeConfig()
 const profile = ref(null)
 const showDropdown = ref(false)
 const dropdownRef = ref(null)
@@ -108,12 +108,12 @@ const profileImage = computed(() => {
   if (userType.value === 'organization') {
     return profile.value?.profile_image
       ? `${profile.value.profile_image}`
-      : 'http://localhost:8000/storage/Organization/default.png';
+      : `${config.public.baseUrl}/storage/Organization/default.png`;
   }
   else if (userType.value === 'user' || userType.value == null) {
     return profile.value?.profile_image
       ? `${profile.value.profile_image}`
-      : 'http://localhost:8000/storage/User/default.png';
+      : `${config.public.baseUrl}/storage/User/default.png`;
   }
 });
 
@@ -142,7 +142,7 @@ watchEffect(async () => {
           ? '/organization/profile'
           : '/profile'
 
-      const res = await client(`http://localhost:8000/api${endpoint}`, {
+      const res = await client(`${config.public.apiUrl}${endpoint}`, {
         credentials: 'include'
       })
 

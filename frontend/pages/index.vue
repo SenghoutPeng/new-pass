@@ -114,7 +114,7 @@
 <script setup>
 import { ref, reactive, computed} from 'vue';
 import { useHead, useLazyFetch, navigateTo } from '#app';
-
+const config = useRuntimeConfig();
 // Specify the layout for this page
 definePageMeta({
   layout: 'master',
@@ -127,15 +127,14 @@ useHead({
     { name: 'description', content: 'Discover and book tickets for amazing events. From music festivals to tech conferences, find your next experience.' }
   ]
 })
-const { data: user } = await useFetch('http://localhost:8000/api/profile', { credentials: 'include' })
+const { data: user } = await useFetch('/api/profile', { credentials: 'include' })
 
 const isAuthenticated = computed(() => !!user.value)
 // Reactive data
 const searchQuery = ref('');
 const selectedCategories = ref([]); // Placeholder for category filtering (if you implement category filtering in the search bar later)
 
-const { data: searchResults, pending: searchPending, error: searchError, refresh: refreshSearch } = useLazyFetch('/api/events', {
-  baseURL: 'http://localhost:8000',
+const { data: searchResults, pending: searchPending, error: searchError, refresh: refreshSearch } = useLazyFetch(`${config.public.apiUrl}/api/events`, {
   server: false,
   lazy: true,
   params: {

@@ -117,7 +117,7 @@ const handleLogin = async () => {
   loginError.value = ''
 
   try {
-    const response = await client(`${config.public.baseUrl}/api/organization/login`, {
+    const response = await client(`${config.public.apiUrl}/organization/login`, {
       method: 'POST',
       body: form.value,
       credentials: 'include'

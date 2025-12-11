@@ -126,7 +126,7 @@ const handleSignup = async () => {
     })
 
     // 2. Send signup data to Laravel backend
-    const response = await client(`${config.public.baseUrl}/api/signup`, {
+    const response = await client(`${config.public.apiUrl}/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

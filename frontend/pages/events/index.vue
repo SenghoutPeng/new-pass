@@ -132,7 +132,7 @@ definePageMeta({
   layout: 'master',
 
 })
-
+const config = useRuntimeConfig()
 // Reactive data
 const searchQuery = ref('')
 const selectedCategory = ref('') 
@@ -214,8 +214,7 @@ const debounce = (func, delay) => {
 const {
   data: apiResponse,
   refresh: fetchEvents
-} = useLazyFetch('/api/on-going-events', {
-  baseURL: 'http://localhost:8000',
+} = useLazyFetch(`${config.public.apiUrl}/on-going-events`, {
   server: false,
   lazy: true,
   // Now watching 'selectedCategory' (single string)

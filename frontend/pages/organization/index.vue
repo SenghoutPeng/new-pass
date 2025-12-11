@@ -56,7 +56,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-
+const config = useRuntimeConfig()
 definePageMeta({
   layout: 'master',
   middleware: 'org-auth'
@@ -69,7 +69,7 @@ const selectedEventId = ref('')
 // Fetch buyers (filtered by event if selected)
 const fetchBuyers = async () => {
   try {
-    let url = 'http://localhost:8000/api/organization/dashboard'
+    let url = `${config.public.apiUrl}/organization/dashboard`
     if (selectedEventId.value) {
       url += `?event_id=${selectedEventId.value}`
     }
@@ -107,7 +107,7 @@ const fetchBuyers = async () => {
 // Fetch the logged-in organization's events
 const fetchEventList = async () => {
   try {
-    const response = await fetch('http://localhost:8000/api/organization/events', {
+    const response = await fetch(`${config.public.apiUrl}/organization/events`, {
       credentials: 'include',
     })
 

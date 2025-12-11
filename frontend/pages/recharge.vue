@@ -104,7 +104,7 @@
   <script setup>
 import { useState } from '#app'// adjust if yours is imported differently
 import { useRouter } from 'vue-router'
-
+const config = useRuntimeConfig()
 const userBalance = useState('userBalance', () => 0)
 const router = useRouter()
 
@@ -154,7 +154,7 @@ async function rechargeBalance() {
     }
 
     // Send POST to backend
-    const response = await client('/api/recharge', {
+    const response = await client(`${config.public.apiUrl}/recharge`, {
       method: 'POST',
       body: { amount: rechargeAmount.value },
       credentials: 'include'

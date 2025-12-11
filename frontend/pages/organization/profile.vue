@@ -155,7 +155,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useState } from '#app'
-
+const config = useRuntimeConfig()
 definePageMeta({ 
   layout: 'master',
   middleware: 'org-auth'
@@ -183,7 +183,7 @@ const orgBalance = useState('orgBalance', () => 0.00)
 
 const fetchOrgProfile = async () => {
   try {
-    const res = await fetch('http://localhost:8000/api/organization/profile', {
+    const res = await fetch(`${config.public.apiUrl}/organization/profile`, {
       method: 'GET',
       credentials: 'include',
       headers: {

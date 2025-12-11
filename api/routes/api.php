@@ -14,7 +14,7 @@ use App\Http\Controllers\OrganizationAuthController;
 
 
 // User routes
-Route::middleware('auth:sanctum')->get('/users', function (Request $request) {
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::prefix('/')->group(function () {

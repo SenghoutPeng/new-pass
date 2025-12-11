@@ -13,7 +13,7 @@
             :to="`/events/${event.event_id}`"
             class="flex-shrink-0 w-[492px] h-[296px] bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 cursor-pointer mx-2"
           >
-            <img :src="event.banner ? `http://localhost:8000/storage/${event.banner}` : 'https://images.unsplash.com/photo-1522158637959-30385a09e0da?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'" :alt="event.title" class="w-full h-[160px] object-cover">
+            <img :src="event.banner ? `${config.public.baseUrl}/storage/${event.banner}` : 'https://images.unsplash.com/photo-1522158637959-30385a09e0da?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'" :alt="event.title" class="w-full h-[160px] object-cover">
             <div class="p-4">
               <h3 class="font-bold text-lg mb-1">{{ event.title }}</h3>
               <p class="text-gray-600 text-sm mb-2">{{ formatDate(event.dates) }}</p>
@@ -60,6 +60,7 @@ const props = defineProps({
   apiUrl: { type: String, required: true },
   filterParams: { type: Object, default: () => ({}) }
 });
+const config = useRuntimeConfig()
 
 const currentSlide = ref(0);
 const cardWidth = 492;
@@ -79,7 +80,7 @@ onUnmounted(() => {
 });
 
 const { data: apiResponse, pending, error } = useLazyFetch(props.apiUrl, {
-  baseURL: 'http://localhost:8000',
+  baseURL: config.public.baseUrl,
   server: false,
   lazy: true,
   params: computed(() => props.filterParams),

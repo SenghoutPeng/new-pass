@@ -79,7 +79,7 @@ definePageMeta({
 const route = useRoute();
 const router = useRouter();
 const eventId = computed(() => route.params.id);
-
+const config = useRuntimeConfig()
 const user = useSanctumUser();
 const userType = computed(() => {
   if (user.value) {
@@ -92,7 +92,7 @@ const isLoggedIn = () => {
   return typeof localStorage !== 'undefined' && !!localStorage.getItem('user_token');
 };
 
-const { data: eventData, pending, error } = useLazyFetch(() => `http://localhost:8000/api/events/${eventId.value}`, {
+const { data: eventData, pending, error } = useLazyFetch(() => `${config.public.apiUrl}/events/${eventId.value}`, {
   transform: (response) => {
     if (response && response.event_detail) {
       console.log('Transformed Event Data:', response.event_detail);

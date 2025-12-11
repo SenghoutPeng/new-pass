@@ -34,10 +34,10 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
-
+const config = useRuntimeConfig()
 // Reactive variable to store organization info
 const orgInfo = ref({
-  profile_image: 'http://localhost:8000/storage/Organization/default.png',
+  profile_image: `${config.public.baseUrl}/storage/Organization/default.png`,
   org_name: 'Organization',
   email: ''
 })
@@ -56,7 +56,7 @@ const isActive = (path) => route.path === path
 
 const fetchProfileData = async () => {
   try {
-    const res = await fetch('http://localhost:8000/api/organization/profile', {
+    const res = await fetch(`${config.public.apiUrl}/organization/profile`, {
       method: 'GET',
       credentials: 'include',
       headers: {

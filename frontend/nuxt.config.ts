@@ -18,7 +18,7 @@ export default defineNuxtConfig({
   ],
 
   sanctum: {
-    baseUrl: 'http://localhost:8000',  
+    baseUrl: 'http://localhost:8000',
     endpoints: {
       login: '/api/login',
       logout: '/api/logout',
@@ -32,7 +32,8 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      baseUrl: 'http://localhost:8000'
+      baseUrl: 'http://localhost:8000',
+      apiUrl: 'http://localhost:8000/api'
     }
   }
 })
