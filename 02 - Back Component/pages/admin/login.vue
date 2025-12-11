@@ -27,9 +27,10 @@
         </div>
         <button
           type="submit"
-          class="w-full bg-blue-600 hover:bg-blue-700 transition duration-150 text-white font-semibold py-2.5 rounded-lg shadow"
+          :disabled="loading"
+          class="w-full bg-blue-600 hover:bg-blue-700 transition duration-150 text-white font-semibold py-2.5 rounded-lg shadow disabled:opacity-50"
         >
-          Sign In
+          {{ loading ? 'Signing In...' : 'Sign In' }}
         </button>
         <p v-if="error" class="text-sm text-red-600 mt-2 text-center">{{ error }}</p>
       </form>
@@ -37,9 +38,10 @@
   </div>
 </template>
 
-
 <script setup>
 import { ref } from 'vue'
+
+const config = useRuntimeConfig()
 
 definePageMeta({
   layout: 'false',
@@ -49,61 +51,71 @@ definePageMeta({
 const email = ref('')
 const password = ref('')
 const error = ref('')
+const loading = ref(false)
 
 // Function to get a specific cookie value by name
 const getCookie = (name) => {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-  return null;
-};
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+  return null
+}
 
 const handleLogin = async () => {
-  error.value = ''; // Clear previous errors
-
+  error.value = ''
+  loading.value = true
+  
   try {
     // Step 1: Get CSRF cookie from Sanctum
-    await fetch('http://localhost:8000/sanctum/csrf-cookie', {
+    await fetch(`${config.public.baseUrl}/sanctum/csrf-cookie`, {
+      method: 'GET',
       credentials: 'include'
-    });
+    })
+
+    // Small delay to ensure cookie is set
+    await new Promise(resolve => setTimeout(resolve, 100))
 
     // Step 2: Get the XSRF-TOKEN from the cookies
-    const xsrfToken = getCookie('XSRF-TOKEN');
-
+    const xsrfToken = getCookie('XSRF-TOKEN')
+    
     if (!xsrfToken) {
-      throw new Error('CSRF token not found. Please ensure Sanctum is configured correctly.');
+      throw new Error('CSRF token not found. Please ensure cookies are enabled.')
     }
 
     // Step 3: Perform login request with X-XSRF-TOKEN header
-    const response = await fetch('http://localhost:8000/api/admin/login', {
+    const response = await fetch(`${config.public.apiUrl}/admin/login`, {
       method: 'POST',
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
         'X-XSRF-TOKEN': decodeURIComponent(xsrfToken)
       },
       body: JSON.stringify({
         email: email.value,
         password: password.value
       })
-    });
+    })
 
-    const data = await response.json();
+    const data = await response.json()
 
     if (!response.ok) {
-      throw new Error(data.message || 'Login failed');
+      throw new Error(data.message || 'Login failed')
     }
 
+    // Store token and user info
     localStorage.setItem('admin_token', data.token)
     localStorage.setItem('admin_email', data.admin.email)
-
-    console.log('Login success:', data);
-    // You can now redirect or store user info
-    navigateTo('/admin'); 
-
+    
+    console.log('Login success:', data)
+    
+    // Redirect to admin dashboard
+    await navigateTo('/admin')
   } catch (err) {
-    console.error('Login error:', err);
-    error.value = err.message || 'An unknown error occurred during login.';
+    console.error('Login error:', err)
+    error.value = err.message || 'An unknown error occurred during login.'
+  } finally {
+    loading.value = false
   }
-};
+}
 </script>

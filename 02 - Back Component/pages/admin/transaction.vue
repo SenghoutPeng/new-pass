@@ -94,14 +94,14 @@ definePageMeta({
   layout: 'master',
   middleware: 'admin'
 })
-
+const config = useRuntimeConfig()
 const {
   data: DashboardData,
   error,
   refresh,
   pending
-} = useLazyFetch('/api/admin/transaction', {
-  baseURL: 'http://localhost:8000',
+} = useLazyFetch(`${config.public.apiUrl}/admin/transaction`, {
+
   credentials: 'include',
   server: false,
   lazy: true

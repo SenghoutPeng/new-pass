@@ -232,7 +232,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useSanctumClient } from '#imports'
-
+const config = useRuntimeConfig()
 definePageMeta({
   layout: 'master',
   middleware: 'admin',
@@ -240,8 +240,8 @@ definePageMeta({
 
 const client = useSanctumClient()
 
-const { data: OrganizationData, refresh } = useLazyFetch('/api/admin/organizations', {
-  baseURL: 'http://localhost:8000',
+const { data: OrganizationData, refresh } = useLazyFetch(`${config.public.apiUrl}/admin/organizations`, {
+
   credentials: 'include',
   server: false,
   lazy: true,
@@ -307,20 +307,26 @@ function openModal(org) {
 // Toggle organization status
 const toggleStatus = async (org) => {
   const originalStatus = org.status
-  org.status = !org.status
+  org.status = !org.status // Optimistic UI update
+
   try {
-    await client(`/api/admin/toggle/organization/${org.org_id}`, {
+    // AWAIT the PATCH request to ensure the server update is finished
+    await client(`${config.public.apiUrl}/admin/toggle/organization/${org.org_id}`, {
       method: 'PATCH',
       credentials: 'include',
-      baseURL: 'http://localhost:8000',
     })
+
     console.log(`Organization ${org.status ? 'activated' : 'deactivated'} successfully`)
-    refresh()
+    
+    refresh() 
+    
   } catch (err) {
+
     org.status = originalStatus
     console.error('Failed to toggle organization status', err)
   }
 }
+
 
 // Edit Organization Modal State
 const editOrgModal = ref(null)
@@ -353,7 +359,7 @@ const updateOrganization = async () => {
 
   const formData = new FormData()
   for (const key in editOrgData.value) {
-    if (key !== 'profile_image') { // Don't append profile_image directly from editOrgData
+    if (key !== 'profile_image') { 
       formData.append(key, editOrgData.value[key])
     }
   }
@@ -365,11 +371,10 @@ const updateOrganization = async () => {
   formData.append('_method', 'PATCH');
 
   try {
-    const response = await client(`/api/admin/update/organization/${selectedOrg.value.org_id}`, {
+    const response = await useSanctumClient(`${config.public.apiUrl}/admin/update/organization/${selectedOrg.value.org_id}`, {
       method: 'PUT',
       body: formData,
-      credentials: 'include',
-      baseURL: 'http://localhost:8000',
+       credentials: 'include',
     })
 
     if (response.message) {

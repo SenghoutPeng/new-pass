@@ -68,7 +68,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-
+const config = useRuntimeConfig()
 definePageMeta({
         layout: 'master'
     })
@@ -83,8 +83,9 @@ const activities = ref([])
 
 const fetchActivityLog = async () => {
   try {
-    const res = await fetch('http://localhost:8000/api/admin/activity-log',{
+    const res = await fetch(`${config.public.apiUrl}/admin/activity-log`,{
       credentials: 'include',
+      baseURL: config.public,
     })
     const data = await res.json()
     activities.value = data.all_activity_logs

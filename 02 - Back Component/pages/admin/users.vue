@@ -249,14 +249,13 @@ import { ref, computed, watch, reactive } from 'vue'
 import { useSanctumClient } from '#imports'
 
 const client = useSanctumClient()
-
+const config = useRuntimeConfig()
 definePageMeta({
   layout: 'master',
   middleware: 'admin',
 })
 
-const { data: UserData, refresh } = useLazyFetch('/api/admin/users', {
-  baseURL: 'http://localhost:8000',
+const { data: UserData, refresh } = useLazyFetch(`${config.public.apiUrl}/admin/users`, {
   credentials: 'include',
   server: false,
   lazy: true,
@@ -308,12 +307,15 @@ const toggleStatus = async (user) => {
   const originalStatus = user.status
   user.status = !user.status
   try {
-    await client(`/api/admin/toggle/user/${user.user_id}`, {
+    await client(`${config.public.apiUrl}/admin/toggle/user/${user.user_id}`, {
       method: 'PATCH',
       credentials: 'include',
-      baseURL: 'http://localhost:8000',
+
     })
+    
     console.log(`User ${user.status ? 'activated' : 'deactivated'} successfully`)
+
+    refresh()
   } catch (err) {
     user.status = originalStatus
     console.error('Failed to toggle user status', err)
@@ -379,11 +381,11 @@ async function submitEditUser() {
       formData.append('profile_image', userProfile.profile_image)
     }
 
-    await client(`/api/admin/update/user/${userProfile.user_id}`, {
+    await client(`${config.public.apiUrl}/update/user/${userProfile.user_id}`, {
       method: 'POST',
       body: formData,
       credentials: 'include',
-      baseURL: 'http://localhost:8000',
+
       headers: { 'X-HTTP-Method-Override': 'PUT' },
     })
 

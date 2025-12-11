@@ -293,7 +293,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useSanctumClient } from '#imports'
-
+const config = useRuntimeConfig()
 definePageMeta({
   layout: 'master',
   middleware: 'admin'
@@ -327,7 +327,7 @@ const fetchEvents = async () => {
   loading.value = true
   try {
     // Ensure the correct endpoint is called for admin's all events
-    const data = await client('http://localhost:8000/api/admin/events')
+    const data = await client(`${config.public.apiUrl}/admin/events`)
 
     // Map events to ensure banner URL is correct for display
     allEvents.value = data.events.map(event => ({
@@ -526,7 +526,7 @@ const updateEvent = async () => {
  
 
     // Correct URL (NO event_id in URL anymore)
-    const res = await client(`http://localhost:8000/api/admin/update/event`, { // <--- URL CHANGED
+    const res = await client(`${config.public.apiUrl}/admin/update/event`, { // <--- URL CHANGED
       method: 'POST', // This must be POST when using _method=PATCH with FormData
       body: formData,
       // Do NOT set Content-Type header manually for FormData

@@ -1,4 +1,3 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineNuxtConfig({
@@ -10,7 +9,6 @@ export default defineNuxtConfig({
       tailwindcss(),
     ],
   },
-
   modules: [
     '@nuxt/content',
     '@nuxt/eslint',
@@ -22,21 +20,22 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     'nuxt-auth-sanctum'
   ],
-  sanctum:{
-    baseUrl : 'http://localhost:8000',
-    endpoints:{
+  sanctum: {
+    
+    baseUrl: 'http://localhost:8000',
+    endpoints: {
       login: '/api/login',
       logout: '/api/logout'
     },
-
     redirect: {
       onLogin: '/',
       onLogout: '/login'
     }
   },
-  runtimeConfig:{
-    public:{
-      baseUrl : 'http://localhost:8000'
+  runtimeConfig: {
+    public: {
+      baseUrl: 'http://localhost:8000',
+      apiUrl: 'http://localhost:8000/api'
     }
   }
 })

@@ -127,7 +127,7 @@
 <script setup>
 
 import { onMounted, computed, ref } from 'vue'
-
+const config = useRuntimeConfig()
 definePageMeta({
     layout: 'master',
     middleware: 'admin'
@@ -136,8 +136,7 @@ definePageMeta({
 const {
   data: DashboardData,
   refresh
-} = useLazyFetch('/api/admin/dashboard', {
-  baseURL: 'http://localhost:8000',
+} = useLazyFetch(`${config.public.apiUrl}/admin/dashboard`, {
   credentials: 'include',
   server: false,
   lazy: true
@@ -164,7 +163,6 @@ const totalPages = computed(() => {
 })
 
 onMounted(() => {
-  // trigger lazy fetch on mount
   refresh()
 })
 </script>

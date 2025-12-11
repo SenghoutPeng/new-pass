@@ -88,7 +88,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-
+const config = useRuntimeConfig()
 definePageMeta({
   layout: 'master',
   middleware: 'admin'
@@ -115,7 +115,7 @@ const getSanctumCsrfToken = () => {
 
 const fetchEventRequests = async () => {
   try {
-    const res = await fetch('http://localhost:8000/api/admin/event-requests', {
+    const res = await fetch(`${config.public.apiUrl}/admin/event-requests`, {
       credentials: 'include'
     })
     const data = await res.json()
@@ -127,7 +127,7 @@ const fetchEventRequests = async () => {
 
 const viewDetails = async (event_id) => {
   try {
-    const res = await fetch(`http://localhost:8000/api/admin/detail-event-request/${event_id}`, {
+    const res = await fetch(`${config.public.apiUrl}/admin/detail-event-request/${event_id}`, {
       credentials: 'include'
     })
     const data = await res.json()
@@ -139,14 +139,14 @@ const viewDetails = async (event_id) => {
 
 const submitDecision = async (decision) => {
   try {
-    await fetch('http://localhost:8000/sanctum/csrf-cookie', {
+    await fetch('/sanctum/csrf-cookie', {
       credentials: 'include'
     });
 
     const xsrfToken = getSanctumCsrfToken();
-    if (!xsrfToken) return router.push('/admin/loginSite');
+    if (!xsrfToken) return router.push('/admin/login');
 
-    const response = await fetch(`http://localhost:8000/api/admin/approve-event`, {
+    const response = await fetch(`${config.public.apiUrl}/admin/approve-event`, {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -196,7 +196,7 @@ const filteredRequests = computed(() => {
 
 onMounted(async () => {
   try {
-    await fetch('http://localhost:8000/sanctum/csrf-cookie', { credentials: 'include' });
+    await fetch(`${config.public.baseUrl}/sanctum/csrf-cookie`, { credentials: 'include' });
   } catch (error) {
     console.error('Error requesting CSRF cookie on mount:', error);
   }
