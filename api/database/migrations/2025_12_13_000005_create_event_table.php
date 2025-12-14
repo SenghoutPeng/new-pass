@@ -21,10 +21,9 @@ return new class extends Migration
             $table->text('description');
             $table->string('banner', 255)->nullable()->default('banners/default.png');
             $table->string('location', 255);
-            $table->string('status', 255)->default('PENDING');
+            $table->string('status', 255)->default('pending');
             $table->string('reviewed_at')->nullable()->default('NULL');
-            $table->timestamp('created_at')->default('CURRENT_TIMESTAMP');
-            $table->timestamp('updated_at')->default('CURRENT_TIMESTAMP');
+            $table->timestamps();
         });
     }
 

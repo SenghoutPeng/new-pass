@@ -20,8 +20,7 @@ return new class extends Migration
             $table->integer('payment_id');
             $table->timestamp('transaction_date')->default('CURRENT_TIMESTAMP');
             $table->string('commission_amount');
-            $table->timestamp('updated_at')->default('CURRENT_TIMESTAMP');
-            $table->timestamp('created_at')->default('CURRENT_TIMESTAMP');
+            $table->timestamps();
         });
     }
 

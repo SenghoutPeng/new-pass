@@ -12,8 +12,7 @@ return new class extends Migration
 
             $table->unsignedBigInteger('rating_category_id')->primary();
             $table->string('rating_category_name', 255);
-            $table->timestamp('updated_at')->default('CURRENT_TIMESTAMP');
-            $table->timestamp('created_at')->default('CURRENT_TIMESTAMP');
+            $table->timestamps();
         });
     }
 

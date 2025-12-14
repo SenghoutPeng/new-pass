@@ -17,9 +17,8 @@ return new class extends Migration
             $table->foreign('rating_category_id')->references('rating_catory_id')->on('rating_category');
             $table->unsignedBigInteger('event_id');
             $table->foreign('event_id')->references('event_id')->on('event_id');
-            $table->timestamp('created_at')->default('CURRENT_TIMESTAMP');
             $table->decimal('rating', 8, 2)->nullable()->default('NULL');
-            $table->timestamp('updated_at')->default('CURRENT_TIMESTAMP');
+            $table->timestamps();
         });
     }
 

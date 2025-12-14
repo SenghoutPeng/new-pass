@@ -34,6 +34,6 @@ class EventSeeder extends Seeder
         ]);
 
         // Set Status
-        Event::where('title', "Vannda - Treyvisai 2025")->update(['status' => 'approved']);
+        Event::where('event_id', 2)->update(['status' => 'approved']);
     }
 }

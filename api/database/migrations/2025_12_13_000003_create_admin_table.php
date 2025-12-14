@@ -15,9 +15,8 @@ return new class extends Migration
             $table->string('email', 100);
             $table->string('password', 255);
             $table->decimal('balance', 10, 2)->default('0.00');
-            $table->timestamp('created_at')->default('CURRENT_TIMESTAMP');
-            $table->timestamp('updated_at');
             $table->string('profile_image', 255)->nullable()->default('Admin/default.png');
+            $table->timestamps();
         });
     }
 

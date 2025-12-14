@@ -19,11 +19,9 @@ return new class extends Migration
             $table->decimal('total_price', 8, 2);
             $table->unsignedBigInteger('user_id')->nullable()->default('NULL');
             $table->foreign('user_id')->references('user_id')->on('user');
-            $table->unsignedBigInteger('event_date_id')->nullable()->default('NULL');
-            $table->foreign('event_date_id')->references('event_date_id')->on('event_date');
+            $table->foreignId('event_date_id')->constrained('event_date', 'event_date_id')->onDelete('cascade');
             $table->string('status', 255);
-            $table->timestamp('updated_at')->default('CURRENT_TIMESTAMP');
-            $table->timestamp('created_at')->default('CURRENT_TIMESTAMP');
+            $table->timestamps();
         });
     }
 

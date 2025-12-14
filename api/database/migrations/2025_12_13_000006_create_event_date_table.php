@@ -11,13 +11,11 @@ return new class extends Migration
         Schema::create('event_date', function (Blueprint $table) {
 
             $table->unsignedBigInteger('event_date_id')->primary();
-            $table->unsignedBigInteger('event_id');
-            $table->foreign('event_id')->references('event_id')->on('event');
+            $table->foreignId('event_id')->constrained('event', 'event_id')->onDelete('cascade');
             $table->string('event_date');
             $table->string('event_time');
             $table->decimal('ticket_price', 10, 2);
-            $table->timestamp('created_at')->nullable()->default('CURRENT_TIMESTAMP');
-            $table->timestamp('updated_at')->nullable()->default('CURRENT_TIMESTAMP');
+            $table->timestamps();
             $table->integer('total_ticket');
         });
     }

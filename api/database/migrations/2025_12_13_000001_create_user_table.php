@@ -9,21 +9,36 @@ return new class extends Migration
     public function up()
     {
         Schema::create('user', function (Blueprint $table) {
-
-            $table->unsignedBigInteger('user_id')->primary();
+            $table->id('user_id');
             $table->string('username', 255);
             $table->string('email', 255);
             $table->string('password', 255);
-            $table->decimal('balance', 10, 2)->default('0.00');
+            $table->decimal('balance', 10, 2)->default(0.00);
             $table->string('profile_image', 255)->nullable()->default('User/default.png');
             $table->integer('status')->default('1');
-            $table->timestamp('created_at')->nullable()->default('NULL');
-            $table->timestamp('updated_at')->nullable()->default('NULL');
+            $table->timestamps();
+        });
+
+        Schema::create('password_reset_tokens', function (Blueprint $table) {
+            $table->string('email')->primary();
+            $table->string('token');
+            $table->timestamp('created_at')->nullable();
+        });
+
+        Schema::create('sessions', function (Blueprint $table) {
+            $table->string('id')->primary();
+            $table->foreignId('user_id')->nullable()->index();
+            $table->string('ip_address', 45)->nullable();
+            $table->text('user_agent')->nullable();
+            $table->longText('payload');
+            $table->integer('last_activity')->index();
         });
     }
 
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists('user');
+        Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('user'); // match the actual table name
     }
 };

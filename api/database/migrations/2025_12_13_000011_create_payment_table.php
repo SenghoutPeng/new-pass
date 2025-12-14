@@ -19,8 +19,7 @@ return new class extends Migration
             $table->integer('quantity');
             $table->string('payment_status');
             $table->timestamp('payment_date');
-            $table->timestamp('updated_at')->default('CURRENT_TIMESTAMP');
-            $table->timestamp('created_at')->default('CURRENT_TIMESTAMP');
+            $table->timestamps();
         });
     }
 
