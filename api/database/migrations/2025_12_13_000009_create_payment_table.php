@@ -10,15 +10,13 @@ return new class extends Migration
     {
         Schema::create('payment', function (Blueprint $table) {
 
-            $table->unsignedBigInteger('payment_id')->primary();
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('user_id')->on('user');
-            $table->unsignedBigInteger('event_id');
-            $table->foreign('event_id')->references('event_id')->on('event');
+            $table->id('payment_id');
+            $table->foreignId('user_id')->constrained('user', 'user_id');
+            $table->foreignId('event_id')->constrained('event', 'event_id');
             $table->decimal('amount', 8, 2);
             $table->integer('quantity');
-            $table->string('payment_status');
-            $table->timestamp('payment_date');
+            $table->enum('payment_status', ["Completed", "Rejected"]);
+            $table->timestamp('payment_date')->useCurrent();
             $table->timestamps();
         });
     }

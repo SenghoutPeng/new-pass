@@ -10,19 +10,16 @@ return new class extends Migration
     {
         Schema::create('event', function (Blueprint $table) {
 
-            $table->unsignedBigInteger('event_id')->primary();
-            $table->unsignedBigInteger('org_id')->nullable()->default('NULL');
-            $table->foreign('org_id')->references('org_id')->on('organization');
-            $table->unsignedBigInteger('admin_id')->nullable()->default('NULL');
-            $table->foreign('admin_id')->references('admin_id')->on('admin');
-            $table->unsignedBigInteger('event_category_id');
-            $table->foreign('event_category_id')->references('event_category_id')->on('event_category');
+            $table->id('event_id');
+            $table->foreignId('org_id')->constrained('organization', 'org_id');
+            $table->foreignId('admin_id')->constrained('admin', 'admin_id');
+            $table->foreignId('event_category_id')->constrained('event_category', 'event_category_id');
             $table->string('title', 255);
             $table->text('description');
-            $table->string('banner', 255)->nullable()->default('banners/default.png');
+            $table->string('banner', 255)->default('storage/banners/default.png');
             $table->string('location', 255);
             $table->string('status', 255)->default('pending');
-            $table->string('reviewed_at')->nullable()->default('NULL');
+            $table->time('reviewed_at')->nullable();
             $table->timestamps();
         });
     }

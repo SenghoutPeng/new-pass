@@ -229,7 +229,7 @@ class AdminController extends Controller
         $adminId = $admin->admin_id;
 
         $adminInfo = DB::table('admin')->where('admin_id', $adminId)->first();
-        $adminInfo->profile_image = asset($adminInfo->profile_image); // Will auto-resolve to http://yourdomain.com/storage/Admin/admin20.png
+        $adminInfo->profile_image = asset('storage/' . $adminInfo->profile_image); // Will auto-resolve to http://yourdomain.com/storage/Admin/admin20.png
 
         return response()->json([
             'admin_information' => $adminInfo

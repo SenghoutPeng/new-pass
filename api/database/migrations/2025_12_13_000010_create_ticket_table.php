@@ -10,15 +10,13 @@ return new class extends Migration
     {
         Schema::create('ticket', function (Blueprint $table) {
 
-            $table->unsignedBigInteger('ticket_id')->primary();
-            $table->unsignedBigInteger('event_id');
-            $table->foreign('event_id')->references('event_id')->on('event');
-            $table->timestamp('purchase_date')->default('CURRENT_TIMESTAMP');
-            $table->integer('payment_id')->nullable()->default('NULL');
+            $table->id('ticket_id');
+            $table->foreignId('event_id')->constrained('event', 'event_id');
+            $table->timestamp('purchase_date')->useCurrent();
+            $table->foreignId('payment_id')->constrained('payment', 'payment_id');
             $table->string('ticket_code', 255);
             $table->decimal('total_price', 8, 2);
-            $table->unsignedBigInteger('user_id')->nullable()->default('NULL');
-            $table->foreign('user_id')->references('user_id')->on('user');
+            $table->foreignId('user_id')->constrained('user', 'user_id');
             $table->foreignId('event_date_id')->constrained('event_date', 'event_date_id')->onDelete('cascade');
             $table->string('status', 255);
             $table->timestamps();

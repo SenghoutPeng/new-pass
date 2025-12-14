@@ -10,12 +10,12 @@ return new class extends Migration
     {
         Schema::create('admin', function (Blueprint $table) {
 
-            $table->unsignedBigInteger('admin_id')->primary();
+            $table->id('admin_id');
             $table->string('username', 50);
             $table->string('email', 100);
             $table->string('password', 255);
-            $table->decimal('balance', 10, 2)->default('0.00');
-            $table->string('profile_image', 255)->nullable()->default('Admin/default.png');
+            $table->decimal('balance', 10, 2)->default(0.00);
+            $table->string('profile_image', 255)->default('Admin/default.png');
             $table->timestamps();
         });
     }

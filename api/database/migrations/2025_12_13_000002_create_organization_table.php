@@ -10,16 +10,16 @@ return new class extends Migration
     {
         Schema::create('organization', function (Blueprint $table) {
 
-            $table->unsignedBigInteger('org_id')->primary();
+            $table->id('org_id');
             $table->string('org_name', 255);
-            $table->integer('status')->default('1');
+            $table->tinyInteger('status')->default(1);
             $table->string('email', 255);
             $table->string('password', 255);
             $table->string('contact_name', 255);
-            $table->string('profile_image', 255)->nullable()->default('Organization/default.png');
+            $table->string('profile_image', 255)->default('Organization/default.png');
             $table->string('contact_phone', 255);
             $table->string('contact_email', 255);
-            $table->decimal('balance', 10, 2)->default('0.00');
+            $table->decimal('balance', 10, 2)->default(0.00);
             $table->string('org_type', 125);
             $table->timestamps();
         });

@@ -10,13 +10,13 @@ return new class extends Migration
     {
         Schema::create('event_date', function (Blueprint $table) {
 
-            $table->unsignedBigInteger('event_date_id')->primary();
+            $table->id('event_date_id');
             $table->foreignId('event_id')->constrained('event', 'event_id')->onDelete('cascade');
-            $table->string('event_date');
-            $table->string('event_time');
+            $table->date('event_date');
+            $table->time('event_time');
             $table->decimal('ticket_price', 10, 2);
-            $table->timestamps();
             $table->integer('total_ticket');
+            $table->timestamps();
         });
     }
 

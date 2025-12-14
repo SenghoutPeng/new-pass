@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('rating_category', function (Blueprint $table) {
 
-            $table->unsignedBigInteger('rating_category_id')->primary();
+            $table->id('rating_category_id');
             $table->string('rating_category_name', 255);
             $table->timestamps();
         });

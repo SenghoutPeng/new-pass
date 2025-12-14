@@ -14,8 +14,8 @@ return new class extends Migration
             $table->string('email', 255);
             $table->string('password', 255);
             $table->decimal('balance', 10, 2)->default(0.00);
-            $table->string('profile_image', 255)->nullable()->default('User/default.png');
-            $table->integer('status')->default('1');
+            $table->string('profile_image', 255)->default('User/default.png');
+            $table->tinyInteger('status')->default(1);
             $table->timestamps();
         });
 
