@@ -65,15 +65,17 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import defaultImage from '~/assets/image/image.png'
+
 const imageUrl = computed(() => {
   return profile.value.image ? profile.value.image : defaultImage
 })
-
+const config = useRuntimeConfig()
 const profile = ref({
   name: '',
   email: '',
   image: ''
 })
+
 
 onMounted(async () => {
 try {
@@ -84,7 +86,7 @@ try {
     return;
   }
 
-  const res = await $fetch('http://localhost:8000/api/admin/profile', {
+  const res = await $fetch(`${config.public.apiUrl}/admin/profile`, {
     method: 'GET', 
     headers: {
       'Authorization': `Bearer ${adminToken}`, 

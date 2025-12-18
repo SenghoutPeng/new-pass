@@ -84,7 +84,7 @@ const selectedEventId = ref('')
 
 const fetchTransactions = async () => {
   try {
-    let url = 'http://localhost:8000/api/organization/transaction'
+    let url = `${config.public.apiUrl}/organization/transaction`
     if (selectedEventId.value) {
       url += `?event_id=${selectedEventId.value}`
     }

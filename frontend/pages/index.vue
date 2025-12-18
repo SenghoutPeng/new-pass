@@ -127,14 +127,14 @@ useHead({
     { name: 'description', content: 'Discover and book tickets for amazing events. From music festivals to tech conferences, find your next experience.' }
   ]
 })
-const { data: user } = await useFetch('/api/profile', { credentials: 'include' })
+const { data: user } = await useFetch(`${config.public.apiUrl}/profile`, { credentials: 'include' })
 
 const isAuthenticated = computed(() => !!user.value)
 // Reactive data
 const searchQuery = ref('');
 const selectedCategories = ref([]); // Placeholder for category filtering (if you implement category filtering in the search bar later)
 
-const { data: searchResults, pending: searchPending, error: searchError, refresh: refreshSearch } = useLazyFetch(`${config.public.apiUrl}/api/events`, {
+const { data: searchResults, pending: searchPending, error: searchError, refresh: refreshSearch } = useLazyFetch(`${config.public.apiUrl}/events`, {
   server: false,
   lazy: true,
   params: {

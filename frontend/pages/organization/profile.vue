@@ -240,7 +240,7 @@ const handleSaveChanges = async () => {
       formData.append('profile_image', profileImageFile.value)
     }
 
-    const data = await client('http://localhost:8000/api/organization/update', {
+    const data = await client(`${config.public.apiUrl}/organization/update`, {
       method: 'POST',
       body: formData,
       credentials: 'include',
@@ -287,7 +287,7 @@ const handleChangePassword = async () => {
   }
 
   try {
-    const response = await client('http://localhost:8000/api/organization/change-password', {
+    const response = await client(`${config.public.apiUrl}/organization/change-password`, {
       method: 'POST',
       body: JSON.stringify({
         current_password: oldPassword.value,

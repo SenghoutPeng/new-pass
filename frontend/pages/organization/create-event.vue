@@ -113,7 +113,7 @@
 import { ref } from 'vue';
 const router = useRouter();
 const client = useSanctumClient();
-
+const config = useRuntimeConfig();
 definePageMeta({
   layout: 'master',
   middleware: 'org-auth'
@@ -186,7 +186,7 @@ const handleCancel = () => {
 
 const fetchCsrfToken = async () => {
   try {
-    const res = await fetch('http://localhost:8000/sanctum/csrf-cookie', {
+    const res = await fetch(`${config.public.baseUrl}/sanctum/csrf-cookie`, {
       method: 'GET',
       credentials: 'include',
     });
@@ -230,7 +230,7 @@ const handleCreateEvent = async () => {
   });
 
   try {
-    const res = await client('http://localhost:8000/api/organization/event-request', {
+    const res = await client(`${config.public.apiUrl}/organization/event-request`, {
       method: 'POST',
       body: formData,
       credentials: 'include',

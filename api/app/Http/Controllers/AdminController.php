@@ -162,7 +162,7 @@ class AdminController extends Controller
         $topEventsByTicket = DB::table('event')
             ->join('ticket', 'ticket.event_id', '=', 'event.event_id')
             ->join('organization','organization.org_id','=','event.org_id')
-            ->groupBy('event.event_id','event.title')
+            ->groupBy('event.event_id','event.title','organization.org_name')
             ->where('ticket.status', 'bought')
             ->select('organization.org_name','event.title', DB::raw('COUNT(ticket.ticket_id) as total_tickets_sold'), DB::raw('SUM(ticket.total_price) as revenue'))
             ->orderByDesc('total_tickets_sold')

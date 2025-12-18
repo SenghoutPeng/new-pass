@@ -99,15 +99,15 @@ const ratingSummary = ref([])
 const recentFeedback = ref([])
 const overallAverageRating = ref(0)
 const totalRatings = ref(0)
-
+const config = useRuntimeConfig()
 const selectedEventId = ref('')
 const eventList = ref([])
 
 const fetchFeedbackData = async () => {
   try {
     const url = selectedEventId.value
-      ? `http://localhost:8000/api/organization/feedback?event_id=${selectedEventId.value}`
-      : `http://localhost:8000/api/organization/feedback`
+      ? `${config.public.apiUrl}/organization/feedback?event_id=${selectedEventId.value}`
+      : `${config.public.apiUrl}/organization/feedback`
 
     const res = await fetch(url, {
       method: 'GET',
@@ -131,7 +131,7 @@ const fetchFeedbackData = async () => {
 
 const fetchEventList = async () => {
   try {
-    const res = await fetch('http://localhost:8000/api/organization/events', {
+    const res = await fetch(`${config.public.apiUrl}/organization/events`, {
       credentials: 'include',
     })
     const data = await res.json()

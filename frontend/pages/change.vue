@@ -94,7 +94,7 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const client = useSanctumClient();
-
+const config = useRuntimeConfig();
 const oldPassword = ref('');
 const newPassword = ref('');
 const confirmPassword = ref('');
@@ -112,7 +112,7 @@ const submit = async () => {
     return;
   }
   try {
-    const response = await client('/api/change-password', {
+    const response = await client(`${config.public.apiUrl}/change-password`, {
       method: 'POST',
       body: {
         current_password: oldPassword.value,
