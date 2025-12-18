@@ -18,7 +18,7 @@ export default defineNuxtConfig({
   ],
 
   sanctum: {
-    baseUrl: 'http://127.0.0.1:8000',
+    baseUrl: 'http://localhost:8000',// Replace with Laravel Server IP without port(eg. http://146.190.87.95)
     endpoints: {
       login: '/api/login',
       logout: '/api/logout',
@@ -31,8 +31,8 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      baseUrl: 'http://127.0.0.1:8000',
-      apiUrl: 'http://127.0.0.1:8000/api'
+      baseUrl: 'http://localhost:8000',// Replace with Laravel Server IP without port(eg. http://146.190.87.95)
+      apiUrl: 'http://localhost:8000/api'// Replace with Laravel Server IP without port(eg. http://146.190.87.95/api)
     }
   }
 })
