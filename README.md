@@ -15,12 +15,12 @@ npm install
 
 > Require **NodeJS** with version >= **20.x**
 
-Next, edit _**nuxt.config.ts**_ according to your setup for both _**frontend/backend**_ then test it locally by running
+Next, edit _**nuxt.config.ts**_ according to your setup for both _**frontend/backend**_, then you can test it locally by running
 ```
 npm run dev
 ```
 
-(optional) Finally, if you are done with configuring _**nuxt.congig.ts**_, and is running the application on a server you need to build the project by
+(optional) Finally, if you are done with configuring _**nuxt.config.ts**_, and is running the application on a server you need to build the project by
 ```
 npm run build
 ```
