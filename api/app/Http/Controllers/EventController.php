@@ -363,7 +363,6 @@ public function getAllOnGoingEvents(Request $request)
 
         $eventId = DB::table('event')->insertGetId([
             'org_id' => $organization->org_id,
-            'admin_id' => 1,
             'title' => $validated['title'],
             'description' => $validated['description'],
             'location' => $validated['location'],
