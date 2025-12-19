@@ -13,7 +13,7 @@ return new class extends Migration
             $table->id('rating_id');
             $table->foreignId('user_id')->constrained('user', 'user_id');
             $table->foreignId('rating_category_id')->constrained('rating_category', 'rating_category_id');
-            $table->foreignId('event_id')->constrained('event', 'event_Id');
+            $table->foreignId('event_id')->constrained('event', 'event_id');
             $table->decimal('rating', 8, 2)->nullable();
             $table->timestamps();
         });
