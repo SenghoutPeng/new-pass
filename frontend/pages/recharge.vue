@@ -3,7 +3,7 @@
       <div class="recharge-card">
         <h1 class="recharge-title">Recharge Your Balance</h1>
         <p class="recharge-subtitle">Add funds to your account using your credit card</p>
-  
+
         <div class="form-section">
           <label for="recharge-amount" class="form-label">Recharge Amount</label>
           <div class="amount-input-group">
@@ -28,7 +28,7 @@
             </button>
           </div>
         </div>
-  
+
         <div class="form-section">
           <h2 class="form-section-title">Credit Card Information</h2>
           <label for="card-number" class="form-label">Card Number</label>
@@ -41,7 +41,7 @@
             @input="formatCardNumber"
             maxlength="19"
           />
-  
+
           <div class="form-row">
             <div class="form-group expiry-date-group">
               <label for="expiry-date" class="form-label">Expiry Date</label>
@@ -67,7 +67,7 @@
               />
             </div>
           </div>
-  
+
           <label for="cardholder-name" class="form-label">Cardholder Name</label>
           <input
             id="cardholder-name"
@@ -77,7 +77,7 @@
             class="form-input"
           />
         </div>
-  
+
         <div class="secure-payment-info">
           <svg
             class="secure-icon"
@@ -92,7 +92,7 @@
             Your payment information is encrypted and secure. We never store your credit card details.
           </p>
         </div>
-  
+
         <div class="action-buttons">
           <button class="recharge-button" @click="rechargeBalance">Recharge Balance</button>
           <button class="cancel-button" @click="cancelRecharge">Cancel</button>
@@ -100,11 +100,11 @@
       </div>
     </div>
   </template>
-  
+
   <script setup>
 import { useState } from '#app'// adjust if yours is imported differently
 import { useRouter } from 'vue-router'
-
+const config = useRuntimeConfig()
 const userBalance = useState('userBalance', () => 0)
 const router = useRouter()
 
@@ -154,7 +154,7 @@ async function rechargeBalance() {
     }
 
     // Send POST to backend
-    const response = await client('/api/recharge', {
+    const response = await client(`${config.public.baseUrl}/api/recharge`, {
       method: 'POST',
       body: { amount: rechargeAmount.value },
       credentials: 'include'
@@ -176,7 +176,7 @@ function cancelRecharge() {
 }
 </script>
 
-  
+
   <style scoped>
   /* Basic Reset & Body Styling for dark background */
   body {
@@ -187,7 +187,7 @@ function cancelRecharge() {
     background-color: #1a1a1a; /* Dark background */
     color: #e0e0e0; /* Light text for dark background */
   }
-  
+
   .recharge-page-container {
     display: flex;
     justify-content: center;
@@ -196,7 +196,7 @@ function cancelRecharge() {
     padding: 40px 20px; /* Add some padding around the card */
     box-sizing: border-box;
   }
-  
+
   .recharge-card {
     background-color: #2a2a2a; /* Slightly lighter dark for the card */
     border-radius: 12px;
@@ -206,7 +206,7 @@ function cancelRecharge() {
     max-width: 500px;
     box-sizing: border-box;
   }
-  
+
   .recharge-title {
     font-size: 2.2em;
     font-weight: 700;
@@ -214,18 +214,18 @@ function cancelRecharge() {
     margin-bottom: 8px;
     text-align: center;
   }
-  
+
   .recharge-subtitle {
     font-size: 1em;
     color: #b0b0b0;
     margin-bottom: 30px;
     text-align: center;
   }
-  
+
   .form-section {
     margin-bottom: 25px;
   }
-  
+
   .form-section-title {
     font-size: 1.1em;
     font-weight: 600;
@@ -234,7 +234,7 @@ function cancelRecharge() {
     padding-top: 15px; /* Spacing from previous section */
     border-top: 1px solid #3c3c3c; /* Subtle separator line */
   }
-  
+
   .form-label {
     display: block;
     font-size: 0.9em;
@@ -242,7 +242,7 @@ function cancelRecharge() {
     margin-bottom: 8px;
     font-weight: 500;
   }
-  
+
   .amount-input-group {
     display: flex;
     align-items: center;
@@ -253,17 +253,17 @@ function cancelRecharge() {
     margin-bottom: 15px;
     transition: border-color 0.2s ease;
   }
-  
+
   .amount-input-group:focus-within {
     border-color: #6a9aff; /* Highlight on focus */
   }
-  
+
   .currency-symbol {
     color: #909090;
     font-size: 1.2em;
     margin-right: 8px;
   }
-  
+
   .amount-input {
     flex-grow: 1;
     background: none;
@@ -273,7 +273,7 @@ function cancelRecharge() {
     padding: 0;
     outline: none; /* Remove default focus outline */
   }
-  
+
   /* Hide number input arrows */
   input[type="number"]::-webkit-outer-spin-button,
   input[type="number"]::-webkit-inner-spin-button {
@@ -283,13 +283,13 @@ function cancelRecharge() {
   input[type="number"] {
     -moz-appearance: textfield;
   }
-  
+
   .amount-presets {
     display: flex;
     gap: 10px;
     margin-bottom: 25px;
   }
-  
+
   .preset-button {
     background-color: #4a4a4a;
     color: #e0e0e0;
@@ -300,18 +300,18 @@ function cancelRecharge() {
     cursor: pointer;
     transition: background-color 0.2s ease, border-color 0.2s ease;
   }
-  
+
   .preset-button:hover {
     background-color: #5a5a5a;
   }
-  
+
   .preset-button.selected {
     background-color: #6a9aff; /* Blue for selected */
     border-color: #6a9aff;
     color: #ffffff;
     font-weight: 600;
   }
-  
+
   .form-input {
     width: 100%;
     padding: 12px 15px;
@@ -325,21 +325,21 @@ function cancelRecharge() {
     outline: none;
     transition: border-color 0.2s ease;
   }
-  
+
   .form-input:focus {
     border-color: #6a9aff;
   }
-  
+
   .form-row {
     display: flex;
     gap: 20px;
     margin-bottom: 20px;
   }
-  
+
   .form-group {
     flex: 1;
   }
-  
+
   .secure-payment-info {
     display: flex;
     align-items: flex-start; /* Align text to top of icon */
@@ -349,7 +349,7 @@ function cancelRecharge() {
     margin-bottom: 30px;
     border: 1px solid #5a5a5a;
   }
-  
+
   .secure-icon {
     width: 24px;
     height: 24px;
@@ -357,27 +357,27 @@ function cancelRecharge() {
     margin-right: 15px;
     flex-shrink: 0; /* Prevent icon from shrinking */
   }
-  
+
   .secure-payment-info p {
     font-size: 0.85em;
     color: #b0b0b0;
     line-height: 1.4;
     margin: 0; /* Remove default paragraph margin */
   }
-  
+
   .secure-text {
     color: #ffffff;
     font-weight: 600;
     display: block; /* Make it block to put "Your payment info..." on new line */
     margin-bottom: 4px;
   }
-  
+
   .action-buttons {
     display: flex;
     flex-direction: column; /* Stack buttons vertically */
     gap: 15px;
   }
-  
+
   .recharge-button,
   .cancel-button {
     width: 100%;
@@ -389,23 +389,23 @@ function cancelRecharge() {
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.1s ease;
   }
-  
+
   .recharge-button {
     background-color: #6a9aff; /* Blue button */
     color: #ffffff;
   }
-  
+
   .recharge-button:hover {
     background-color: #5a88e0;
     transform: translateY(-1px);
   }
-  
+
   .cancel-button {
     background-color: transparent;
     color: #909090;
     border: 1px solid #5a5a5a;
   }
-  
+
   .cancel-button:hover {
     background-color: #3a3a3a;
     transform: translateY(-1px);

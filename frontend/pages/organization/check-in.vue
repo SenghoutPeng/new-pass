@@ -58,7 +58,7 @@
 <script setup>
 import { ref } from 'vue'
 const client = useSanctumClient();
-
+const config = useRuntimeConfig()
 definePageMeta({
   layout: 'master',
   middleware: 'org-auth'
@@ -73,7 +73,7 @@ const handleCheckIn = async () => {
   }
 
   try {
-    const res = await client('http://localhost:8000/api/organization/check-in', {
+    const res = await client(`${config.public.baseUrl}/api/organization/check-in`, {
       method: 'POST',
       body: {
         ticket_code: reservationCode.value.trim(),

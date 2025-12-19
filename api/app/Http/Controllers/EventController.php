@@ -100,7 +100,7 @@ public function getAllOnGoingEvents(Request $request)
                 });
         })
         // Group by event to avoid duplicate events and ensure we get only one event per row
-        ->groupBy('event.event_id');
+        ->groupBy('event.event_id', 'event.org_id', 'event.admin_id', 'event.event_category_id', 'event.title', 'event.description', 'event.banner', 'event.location', 'event.status', 'event.reviewed_at', 'event.created_at', 'event.updated_at', 'event_category.event_category_name');
 
     // Apply keyword search if provided
     if (!empty($request->keyword)) {
@@ -183,7 +183,7 @@ public function getAllOnGoingEvents(Request $request)
                             ->where('event_date.event_time', '>', $now->toTimeString());
                     });
             })
-            ->groupBy('event.event_id')
+            ->groupBy('event.event_id', 'event.org_id', 'event.admin_id', 'event.event_category_id', 'event.title', 'event.description', 'event.banner', 'event.location', 'event.status', 'event.reviewed_at', 'event.created_at', 'event.updated_at')
             ->orderBy('ticket_count', 'desc')
             ->limit(5)
             ->get();

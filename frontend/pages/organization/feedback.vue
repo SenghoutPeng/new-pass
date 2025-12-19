@@ -89,7 +89,7 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-
+const config = useRuntimeConfig()
 definePageMeta({
   layout: 'master',
   middleware: 'org-auth'
@@ -106,8 +106,8 @@ const eventList = ref([])
 const fetchFeedbackData = async () => {
   try {
     const url = selectedEventId.value
-      ? `http://localhost:8000/api/organization/feedback?event_id=${selectedEventId.value}`
-      : `http://localhost:8000/api/organization/feedback`
+      ? `${config.public.baseUrl}/api/organization/feedback?event_id=${selectedEventId.value}`
+      : `${config.public.baseUrl}/api/organization/feedback`
 
     const res = await fetch(url, {
       method: 'GET',
@@ -131,7 +131,7 @@ const fetchFeedbackData = async () => {
 
 const fetchEventList = async () => {
   try {
-    const res = await fetch('http://localhost:8000/api/organization/events', {
+    const res = await fetch(`${config.public.baseUrl}/api/organization/events`, {
       credentials: 'include',
     })
     const data = await res.json()

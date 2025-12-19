@@ -114,7 +114,7 @@
 <script setup>
 import { ref, reactive, computed} from 'vue';
 import { useHead, useLazyFetch, navigateTo } from '#app';
-
+const config = useRuntimeConfig()
 // Specify the layout for this page
 definePageMeta({
   layout: 'master',
@@ -127,7 +127,7 @@ useHead({
     { name: 'description', content: 'Discover and book tickets for amazing events. From music festivals to tech conferences, find your next experience.' }
   ]
 })
-const { data: user } = await useFetch('/api/profile', { credentials: 'include' })
+const { data: user } = await useFetch(`${config.public.baseUrl}/api/profile`, { credentials: 'include' })
 
 const isAuthenticated = computed(() => !!user.value)
 // Reactive data

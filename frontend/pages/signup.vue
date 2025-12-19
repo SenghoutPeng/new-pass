@@ -69,7 +69,7 @@
       </div>
     </div>
   </div>
-  
+
   </template>
 
 
@@ -77,7 +77,6 @@
 import { ref, computed } from 'vue' // Make sure ref and computed are imported
 import { useRouter } from 'vue-router' // Import useRouter for navigation
 import { useSanctumAuth } from '#imports'
-
 definePageMeta({
   middleware: 'sanctum:guest' // Ensure this page is only accessible to guests
 })
@@ -116,8 +115,8 @@ const handleSignup = async () => {
   }
 
   loading.value = true
-  apiError.value = null 
-  validationErrors.value = {} 
+  apiError.value = null
+  validationErrors.value = {}
 
   try {
     // 1. Fetch CSRF cookie (essential for Laravel Sanctum POST requests)
@@ -139,12 +138,12 @@ const handleSignup = async () => {
         password_confirmation: form.value.confirmPassword, // Laravel's 'confirmed' rule expects this name
       },
     })
-    
+
     // Assuming successful signup, store the token
     if (response.token && process.client) {
       localStorage.setItem('user_token', response.token);
     }
-    
+
     alert('Account created successfully!');
 
     await login({
@@ -152,7 +151,7 @@ const handleSignup = async () => {
       password: form.value.password
     });
     router.push('/profile'); // Redirect to user profile or another relevant page
-    
+
   } catch (error) {
     console.error('Signup failed:', error);
     if (error.statusCode === 422) {

@@ -181,7 +181,6 @@
 import { ref, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useSanctumAuth, useSanctumClient } from '#imports';
-
 const router = useRouter();
 const config = useRuntimeConfig();
 const client = useSanctumClient();
@@ -201,7 +200,7 @@ const getAuthToken = () => {
 };
 const authToken = computed(() => getAuthToken());
 
-const { data: profileResponse, pending: pendingProfile, error: errorProfile, refresh: refreshProfile } = useFetch('/api/profile', {
+const { data: profileResponse, pending: pendingProfile, error: errorProfile, refresh: refreshProfile } = useFetch(`${config.public.baseUrl}/api/profile`, {
   headers: {
     'Authorization': `Bearer ${authToken.value}`,
   },
@@ -246,7 +245,7 @@ watch(userProfile, (newProfile) => {
 
 
 // --- Fetch User Tickets ---
-const { data: ticketsResponse, pending: pendingTickets, error: errorTickets, refresh: refreshTickets } = useFetch('/api/get-tickets', {
+const { data: ticketsResponse, pending: pendingTickets, error: errorTickets, refresh: refreshTickets } = useFetch(`${config.public.baseUrl}/api/get-tickets`, {
   headers: {
     'Authorization': `Bearer ${authToken.value}`,
   },

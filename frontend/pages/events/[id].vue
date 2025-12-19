@@ -72,10 +72,10 @@ import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 definePageMeta({
-  layout: 'master', 
+  layout: 'master',
 
 });
-
+const config = useRuntimeConfig()
 const route = useRoute();
 const router = useRouter();
 const eventId = computed(() => route.params.id);
@@ -92,7 +92,7 @@ const isLoggedIn = () => {
   return typeof localStorage !== 'undefined' && !!localStorage.getItem('user_token');
 };
 
-const { data: eventData, pending, error } = useLazyFetch(() => `http://localhost:8000/api/events/${eventId.value}`, {
+const { data: eventData, pending, error } = useLazyFetch(() => `${config.public.baseUrl}/api/events/${eventId.value}`, {
   transform: (response) => {
     if (response && response.event_detail) {
       console.log('Transformed Event Data:', response.event_detail);

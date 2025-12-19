@@ -135,11 +135,11 @@ definePageMeta({
 
 // Reactive data
 const searchQuery = ref('')
-const selectedCategory = ref('') 
+const selectedCategory = ref('')
 const selectedDate = ref('all')
 const currentPage = ref(1)
-const itemsPerPage = 10; 
-
+const itemsPerPage = 10;
+const config = useRuntimeConfig()
 const MusicIcon = {
   template: '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6zm-2 16c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>'
 };
@@ -215,11 +215,11 @@ const {
   data: apiResponse,
   refresh: fetchEvents
 } = useLazyFetch('/api/on-going-events', {
-  baseURL: 'http://localhost:8000',
+  baseURL: config.public.baseUrl,
   server: false,
   lazy: true,
   // Now watching 'selectedCategory' (single string)
-  watch: [searchQuery, selectedCategory], 
+  watch: [searchQuery, selectedCategory],
   transform: (data) => data.events, // Directly get the 'events' array
   params: {
     keyword: searchQuery,

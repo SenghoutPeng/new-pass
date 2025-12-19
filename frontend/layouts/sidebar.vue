@@ -4,7 +4,7 @@
       <div class="px-6 mb-8 text-center flex gap-4">
         <div class="w-16 h-16 rounded-full overflow-hidden border border-gray-300 mx-auto mb-2">
             <img
-                :src="profileImage"
+                :src="`${profileImage}`"
                 :alt="orgInfo.org_name.slice(0, 2).toLocaleUpperCase()"
                 class="w-full h-full object-cover object-center"
             />
@@ -32,12 +32,12 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-
+const config = useRuntimeConfig()
 const route = useRoute()
 
 // Reactive variable to store organization info
 const orgInfo = ref({
-  profile_image: '/storage/Organization/default.png',
+  profile_image: '',
   org_name: 'Organization',
   email: ''
 })
@@ -56,7 +56,7 @@ const isActive = (path) => route.path === path
 
 const fetchProfileData = async () => {
   try {
-    const res = await fetch('http://localhost:8000/api/organization/profile', {
+    const res = await fetch(`${config.public.baseUrl}/api/organization/profile`, {
       method: 'GET',
       credentials: 'include',
       headers: {

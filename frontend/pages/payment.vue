@@ -79,7 +79,7 @@ const completePayment = async () => {
   // Iterate over each selected ticket and make a separate API call
   for (const ticket of selected.value.selectedTickets) {
     try {
-      const response = await client('/api/buy-ticket', {
+      const response = await client(`${config.public.baseUrl}/api/buy-ticket`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

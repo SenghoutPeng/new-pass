@@ -67,7 +67,7 @@
 import { ref, computed, watchEffect } from 'vue'
 import { useRouter , useRoute} from 'vue-router'
 import { onClickOutside } from '@vueuse/core'
-
+const config = useRuntimeConfig()
 // Get user/organization information
 const user = useSanctumUser()
 // Use logout from SanctumAuth
@@ -108,12 +108,12 @@ const profileImage = computed(() => {
   if (userType.value === 'organization') {
     return profile.value?.profile_image
       ? `${profile.value.profile_image}`
-      : '/storage/Organization/default.png';
+      : `${config.public.baseUrl}/storage/Organization/default.png`;
   }
   else if (userType.value === 'user' || userType.value == null) {
     return profile.value?.profile_image
       ? `${profile.value.profile_image}`
-      : '/storage/User/default.png';
+      : `${config.public.baseUrl}/storage/User/default.png`;
   }
 });
 
@@ -142,7 +142,7 @@ watchEffect(async () => {
           ? '/organization/profile'
           : '/profile'
 
-      const res = await client(`http://localhost:8000/api${endpoint}`, {
+      const res = await client(`${config.public.baseUrl}/api${endpoint}`, {
         credentials: 'include'
       })
 

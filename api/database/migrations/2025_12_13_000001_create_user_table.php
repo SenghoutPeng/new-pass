@@ -16,6 +16,7 @@ return new class extends Migration
             $table->decimal('balance', 10, 2)->default(0.00);
             $table->string('profile_image', 255)->default('User/default.png');
             $table->tinyInteger('status')->default(1);
+            $table->string('type')->default('user');
             $table->timestamps();
         });
 

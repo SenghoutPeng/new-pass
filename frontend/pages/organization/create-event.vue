@@ -113,7 +113,7 @@
 import { ref } from 'vue';
 const router = useRouter();
 const client = useSanctumClient();
-
+const config = useRuntimeConfig()
 definePageMeta({
   layout: 'master',
   middleware: 'org-auth'
@@ -230,7 +230,7 @@ const handleCreateEvent = async () => {
   });
 
   try {
-    const res = await client('http://localhost:8000/api/organization/event-request', {
+    const res = await client(`${config.public.baseUrl}/api/organization/event-request`, {
       method: 'POST',
       body: formData,
       credentials: 'include',

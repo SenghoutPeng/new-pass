@@ -145,7 +145,7 @@
         </div>
 
 
-  
+
       </main>
     </div>
   </div>
@@ -156,14 +156,14 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useState } from '#app'
 
-definePageMeta({ 
+definePageMeta({
   layout: 'master',
   middleware: 'org-auth'
 })
 
 const router = useRouter()
 const client = useSanctumClient()
-
+const config = useRuntimeConfig()
 const org = ref({
   org_id: '',
   org_name: '',
@@ -183,7 +183,7 @@ const orgBalance = useState('orgBalance', () => 0.00)
 
 const fetchOrgProfile = async () => {
   try {
-    const res = await fetch('http://localhost:8000/api/organization/profile', {
+    const res = await fetch(`${config.public.baseUrl}/api/organization/profile`, {
       method: 'GET',
       credentials: 'include',
       headers: {

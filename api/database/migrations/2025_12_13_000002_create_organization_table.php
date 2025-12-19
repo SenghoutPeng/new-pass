@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('contact_email', 255);
             $table->decimal('balance', 10, 2)->default(0.00);
             $table->string('org_type', 125);
+            $table->string('type')->default('organization');
             $table->timestamps();
         });
     }

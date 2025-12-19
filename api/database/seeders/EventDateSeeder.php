@@ -40,7 +40,7 @@ class EventDateSeeder extends Seeder
         EventDate::create([
             'event_time' => '20:00:00',
             'event_id' => 2,
-            'event_date' => '2025-08-19',
+            'event_date' => '2026-08-19',
             'ticket_price' => 40.00,
             'total_ticket' => 1000,
         ]);
