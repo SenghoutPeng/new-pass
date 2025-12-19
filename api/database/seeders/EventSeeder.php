@@ -19,7 +19,7 @@ class EventSeeder extends Seeder
             'location' => 'Cambodia',
             'event_category_id' => 4,
             'org_id' => 1,
-            'banner' => 'banners/org_1_1.jpg',
+            'banner' => 'banners/org_1_1.png',
             'admin_id' => 1
         ]);
 
