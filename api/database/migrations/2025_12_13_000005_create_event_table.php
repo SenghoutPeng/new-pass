@@ -11,8 +11,8 @@ return new class extends Migration
         Schema::create('event', function (Blueprint $table) {
 
             $table->id('event_id');
-            $table->foreignId('org_id')->constrained('organization', 'org_id');
-            $table->foreignId('admin_id')->constrained('admin', 'admin_id');
+            $table->foreignId('org_id')->nullable()->constrained('organization', 'org_id');
+            $table->foreignId('admin_id')->nullable()->constrained('admin', 'admin_id');
             $table->foreignId('event_category_id')->constrained('event_category', 'event_category_id');
             $table->string('title', 255);
             $table->text('description');
