@@ -1,12 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 
-use App\Models\Organization;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller;
+use App\Models\Organization;
+
 
 
 class OrganizationAuthController extends Controller
@@ -21,7 +22,7 @@ class OrganizationAuthController extends Controller
 
     public function signup(Request $request)
     {
-       $validated = $request->validate([
+        $validated = $request->validate([
             'org_name' => 'required|string|max:255',
             'email' => 'required|email|unique:organization',
             'password' => 'required|string|min:8|confirmed',

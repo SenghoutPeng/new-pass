@@ -16,4 +16,8 @@ class RatingCategory extends Model
     ];
 
 
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class, 'rating_category_id', 'rating_category_id');
+    }
 }

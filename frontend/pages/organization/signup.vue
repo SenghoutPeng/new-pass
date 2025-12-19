@@ -188,7 +188,7 @@ const handleSignUp = async () => {
       credentials: 'include'
     })
 
-    await client(`${config.public.apiUrl}organization/login`, {
+    await client(`${config.public.apiUrl}/organization/login`, {
       method: 'POST',
       body: {
         email: FormData.value.email,

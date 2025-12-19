@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Models\Event;
+use App\Models\Transaction;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Organization extends Authenticatable
 {
@@ -32,4 +34,13 @@ class Organization extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    public function events()
+    {
+        return $this->hasMany(Event::class, 'org_id', 'org_id');
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, 'org_id', 'org_id');
+    }
 }

@@ -2,13 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Carbon\Carbon;
+use App\Http\Controllers\Controller;
+use App\Models\Event;
+use App\Models\EventDate;
+use App\Models\Ticket;
+use App\Models\Payment;
+use App\Models\Transaction;
+use App\Models\CheckinLog;
+use App\Models\Organization;
 
 class OrganizationController extends Controller
 {
@@ -21,8 +27,8 @@ class OrganizationController extends Controller
         ]);
 
         // Fetch event and specific event date
-        $event = DB::table('event')->where('event_id', $request->event_id)->first();
-        $eventDate = DB::table('event_date')->where('event_date_id', $request->event_date_id)->first();
+        $event = Event::where('event_id', $request->event_id)->first();
+        $eventDate = EventDate::where('event_date_id', $request->event_date_id)->first();
 
         if ($event->status == 'pending') {
             return response()->json(['message' => 'Event has not been approved']);
@@ -39,7 +45,7 @@ class OrganizationController extends Controller
             $code = Str::uuid();
             $checkInCodes[] = $code;
 
-            DB::table('ticket')->insert([
+            Ticket::create([
                 'event_id' => $event->event_id,
                 'event_date_id' => $eventDate->event_date_id,
                 'ticket_code' => $code,
@@ -48,10 +54,9 @@ class OrganizationController extends Controller
             ]);
         }
 
-           // Update total_ticket for the specific event date, not the event itself
-           DB::table('event_date')->where('event_date_id', $eventDate->event_date_id)->update([
-            'total_ticket' => $eventDate->total_ticket - $request->quantity
-        ]);
+        // Update total_ticket for the specific event date
+        $eventDate->decrement('total_ticket', $request->quantity);
+
         return response()->json([
             'message' => 'Ticket(s) reserved successfully',
             'checkin_codes' => $checkInCodes
@@ -69,8 +74,7 @@ class OrganizationController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        $events = DB::table('event')
-            ->where('org_id', $organization->org_id)
+        $events = Event::where('org_id', $organization->org_id)
             ->select('event_id as id', 'title as name')
             ->orderBy('title')
             ->get();
@@ -92,27 +96,33 @@ class OrganizationController extends Controller
         $organizationId = $organization->org_id;
         $eventId = $request->query('event_id');
 
-        $query = DB::table('payment')
-            ->join('user', 'payment.user_id', '=', 'user.user_id')
-            ->join('event', 'payment.event_id', '=', 'event.event_id')
-            ->where('event.org_id', $organizationId);
+        // Fetch payments with relationships
+        $paymentsQuery = Payment::with(['user', 'event'])
+            ->whereHas('event', function ($query) use ($organizationId) {
+                $query->where('org_id', $organizationId);
+            });
 
         if ($eventId) {
-            $query->where('event.event_id', $eventId);
+            $paymentsQuery->where('event_id', $eventId);
         }
 
-        $buyerList = $query
-            ->select(
-                'user.username',
-                'user.user_id',
-                DB::raw('SUM(payment.quantity) as quantity'),
-                DB::raw('SUM(payment.amount) as amount'),
-                DB::raw('MAX(payment.payment_date) as payment_date'),
-                'event.title'
-            )
-            ->groupBy('user.user_id', 'user.username', 'event.title')
-            ->orderBy('user.username')
-            ->get();
+        $payments = $paymentsQuery->get();
+
+        // Group by user and event, then aggregate in PHP
+        $buyerList = $payments->groupBy(function ($payment) {
+            return $payment->user_id . '-' . $payment->event_id;
+        })->map(function ($userPayments) {
+            $firstPayment = $userPayments->first();
+
+            return [
+                'username' => $firstPayment->user->username,
+                'user_id' => $firstPayment->user->user_id,
+                'quantity' => $userPayments->sum('quantity'),
+                'amount' => $userPayments->sum('amount'),
+                'payment_date' => $userPayments->max('payment_date'),
+                'title' => $firstPayment->event->title
+            ];
+        })->sortBy('username')->values();
 
         activity()
             ->causedBy($organization)
@@ -133,53 +143,55 @@ class OrganizationController extends Controller
         $selectedEventId = null;
         $selectedEventTitle = null;
 
-
-        if($request->has('event_id'))
-        {
+        if ($request->has('event_id')) {
             $selectedEventId = $request->event_id;
-            $eventCheck = DB::table('event')
-                ->where('event_id', $selectedEventId)
+            $eventCheck = Event::where('event_id', $selectedEventId)
                 ->where('org_id', $organizationId)
                 ->select('title')
                 ->first();
+
             if (!$eventCheck) {
                 return response()->json(['error' => 'Event not found or does not belong to your organization.'], 404);
             }
             $selectedEventTitle = $eventCheck->title;
         }
-        $transactionQuery = DB::table('transaction')
-        ->join('user', 'user.user_id', '=', 'transaction.user_id')
-        ->join('event', 'event.event_id', '=', 'transaction.event_id')
-        ->join('payment', 'payment.payment_id', '=', 'transaction.payment_id')
-        ->where('event.org_id', $organizationId)
-        ->select(
-            'transaction.created_at as date',
-            'user.username as user',
-            'event.title as event',
-            'payment.amount'
-        );
+
+        $transactionQuery = Transaction::with(['user', 'event', 'payment'])
+            ->whereHas('event', function ($query) use ($organizationId) {
+                $query->where('org_id', $organizationId);
+            });
+
         if ($selectedEventId) {
-            $transactionQuery->where('transaction.event_id', $selectedEventId);
+            $transactionQuery->where('event_id', $selectedEventId);
         }
 
-        $transactionList = $transactionQuery->orderByDesc('transaction.created_at')->get();
+        $transactions = $transactionQuery->orderByDesc('created_at')->get();
 
-        $organizationEvents = DB::table('event')
-            ->where('org_id', $organizationId)
+        $transactionList = $transactions->map(function ($transaction) {
+            return [
+                'date' => $transaction->created_at,
+                'user' => $transaction->user->username,
+                'event' => $transaction->event->title,
+                'amount' => $transaction->payment->amount
+            ];
+        });
+
+        $organizationEvents = Event::where('org_id', $organizationId)
             ->select('event_id', 'title')
             ->orderBy('title')
             ->get();
+
         activity()
             ->causedBy($organization)
             ->withProperties(['event_id_filter' => $selectedEventId])
             ->log('Organization viewed transactions');
 
-            return response()->json([
-                'transactions' => $transactionList,
-                'target_event_id' => $selectedEventId,
-                'target_event_title' => $selectedEventTitle,
-                'organization_events' => $organizationEvents,
-            ]);
+        return response()->json([
+            'transactions' => $transactionList,
+            'target_event_id' => $selectedEventId,
+            'target_event_title' => $selectedEventTitle,
+            'organization_events' => $organizationEvents,
+        ]);
     }
 
 
@@ -193,17 +205,14 @@ class OrganizationController extends Controller
         ]);
 
         // Find the ticket
-        $ticket = DB::table('ticket')
-            ->where('ticket_code', $request->ticket_code)
-            ->first();
+        $ticket = Ticket::where('ticket_code', $request->ticket_code)->first();
 
         if (!$ticket) {
             return response()->json(['message' => 'Invalid ticket code.'], 404);
         }
 
         // Get event date & time
-        $eventDate = DB::table('event_date')
-            ->where('event_date_id', $ticket->event_date_id)
+        $eventDate = EventDate::where('event_date_id', $ticket->event_date_id)
             ->select('event_date', 'event_time')
             ->first();
 
@@ -223,16 +232,14 @@ class OrganizationController extends Controller
         }
 
         // Check if already checked in
-        $alreadyCheckedIn = DB::table('checkin_log')
-            ->where('ticket_code', $ticket->ticket_code)
-            ->exists();
+        $alreadyCheckedIn = CheckinLog::where('ticket_code', $ticket->ticket_code)->exists();
 
         if ($alreadyCheckedIn) {
             return response()->json(['message' => 'Ticket already checked in.'], 409);
         }
 
         // Insert check-in log
-        DB::table('checkin_log')->insert([
+        CheckinLog::create([
             'ticket_id' => $ticket->ticket_id,
             'ticket_code' => $ticket->ticket_code,
             'user_id' => $ticket->user_id,
@@ -254,20 +261,19 @@ class OrganizationController extends Controller
     {
         // Get the logged in organization
         $organization = Auth::guard('organization-api')->user();
-        // Get the logged in organization's id
-        $organizationId = $organization->org_id;
+
         // Get the logged in organization's info
-        $organizationInfo = DB::table('organization')->where('org_id',$organizationId)->first();
+        $organizationInfo = Organization::where('org_id', $organization->org_id)->first();
+
         // Count the number of events created by the organization
-        $eventCount = DB::table('event')->where('org_id', $organizationId)->count();
+        $eventCount = Event::where('org_id', $organization->org_id)->count();
 
-    if ($organizationInfo) {
-        $organizationInfo->profile_image = $organizationInfo->profile_image
-            ? asset('storage/' . $organizationInfo->profile_image)
-            : asset('storage/Organization/default.png');
-    }
+        if ($organizationInfo) {
+            $organizationInfo->profile_image = $organizationInfo->profile_image
+                ? asset('storage/' . $organizationInfo->profile_image)
+                : asset('storage/Organization/default.png');
+        }
 
-        // Return a proper JSON response (as key-value)
         return response()->json([
             'organization_information' => $organizationInfo,
             'total_events_created' => $eventCount
@@ -280,7 +286,6 @@ class OrganizationController extends Controller
     public function updateProfile(Request $request)
     {
         $user = Auth::guard('organization')->user();
-
         $orgId = $user->org_id;
 
         // Validate incoming data
@@ -300,7 +305,7 @@ class OrganizationController extends Controller
             ], 422);
         }
 
-        $org = DB::table('organization')->where('org_id', $orgId)->first();
+        $org = Organization::where('org_id', $orgId)->first();
 
         if (!$org) {
             return response()->json(['message' => 'Organization not found'], 404);
@@ -316,19 +321,18 @@ class OrganizationController extends Controller
         }
 
         // Update organization
-        DB::table('organization')->where('org_id', $orgId)->update([
+        $org->update([
             'org_name'      => $request->org_name,
             'email'         => $request->email,
             'contact_name'  => $request->contact_name,
             'contact_email' => $request->contact_email,
             'contact_phone' => $request->contact_phone,
             'profile_image' => $profileImagePath,
-            'updated_at'    => now(),
         ]);
 
         return response()->json([
             'message' => 'Profile updated successfully.',
-            'organization_information' => DB::table('organization')->where('org_id', $orgId)->first()
+            'organization_information' => $org->fresh()
         ]);
     }
 }

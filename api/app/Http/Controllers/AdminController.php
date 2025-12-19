@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\EventDate;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -13,6 +12,12 @@ use App\Models\Event;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Organization;
+use App\Models\Ticket;
+use App\Models\Payment;
+use App\Models\Transaction;
+use App\Models\EventCategory;
+use Spatie\Activitylog\Models\Activity;
+use App\Models\Admin;
 
 class AdminController extends Controller
 {
@@ -24,24 +29,24 @@ class AdminController extends Controller
         if (!$admin) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        $totalOrganizations = DB::table('organization')->count();
-        $newOrganizations = DB::table('organization')
-                        ->whereMonth('created_at',Carbon::now()->month)
-                        ->whereYear('created_at', Carbon::now()->year)
-                        ->count();
 
-        $organizationList = DB::table('organization')->get();
+        $totalOrganizations = Organization::count();
+        $newOrganizations = Organization::whereMonth('created_at', Carbon::now()->month)
+            ->whereYear('created_at', Carbon::now()->year)
+            ->count();
 
-        $totalBalance = DB::table('organization')->sum('balance');
+        $organizationList = Organization::all();
+
+        $totalBalance = Organization::sum('balance');
 
         $organizationList = $organizationList->map(function ($org) {
-        if ($org->profile_image && $org->profile_image !== '') {
-            $org->profile_image = url('storage/' . $org->profile_image);
-        } else {
-            $org->profile_image = url('storage/Organization/default.png');
-        }
-        return $org;
-    });
+            if ($org->profile_image && $org->profile_image !== '') {
+                $org->profile_image = url('storage/' . $org->profile_image);
+            } else {
+                $org->profile_image = url('storage/Organization/default.png');
+            }
+            return $org;
+        });
 
         return response()->json([
             'total_organizations' => $totalOrganizations,
@@ -56,17 +61,18 @@ class AdminController extends Controller
 
     public function getAllUsers()
     {
-
         $admin = Auth::guard('admin-api')->user();
 
         if (!$admin) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        $totalUsers = DB::table('user')->count();
-        $newUsers = DB::table('user')->whereMonth('created_at', Carbon::now()->month)->whereYear('created_at', Carbon::now()->year)
-        ->count();
-        $totalBalance = DB::table('user')->sum('balance');
-        $userList = DB::table('user')->get();
+
+        $totalUsers = User::count();
+        $newUsers = User::whereMonth('created_at', Carbon::now()->month)
+            ->whereYear('created_at', Carbon::now()->year)
+            ->count();
+        $totalBalance = User::sum('balance');
+        $userList = User::all();
 
         $userList = $userList->map(function ($user) {
             if (empty($user->profile_image)) {
@@ -95,43 +101,50 @@ class AdminController extends Controller
         if (!$admin) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        $keyword = "%" . $request->keyword . "%";
+
+        $keyword = $request->keyword;
         $filterBy30Days = $request->has('last_30_days');
 
-        $totalEvents = DB::table('event')->count();
-        $totalOrganizations = DB::table('organization')->count();
-        $totalTicketSold = DB::table('ticket')->count();
+        $totalEvents = Event::count();
+        $totalOrganizations = Organization::count();
+        $totalTicketSold = Ticket::count();
 
-        $transactionQuery = DB::table('transaction')
-            ->join('organization', 'organization.org_id', '=', 'transaction.org_id')
-            ->join('event', 'event.event_id', '=', 'transaction.event_id')
-            ->join('payment', 'payment.payment_id', '=', 'transaction.payment_id')
-            ->select(
-                DB::raw('DATE(transaction.created_at) as created_at'),
-                'organization.org_name',
-                'event.title',
-                DB::raw('SUM(payment.quantity) as ticketsold'),
-                'transaction.commission_amount'
-            );
+        // Fetch transactions with relationships
+        $transactionQuery = Transaction::with(['organization', 'event', 'payment']);
 
         if (!empty($keyword)) {
-            $transactionQuery->whereAny(['organization.org_name','event.title'], 'like', $keyword);
+            $transactionQuery->where(function($query) use ($keyword) {
+                $query->whereHas('organization', function($q) use ($keyword) {
+                    $q->where('org_name', 'like', '%' . $keyword . '%');
+                })->orWhereHas('event', function($q) use ($keyword) {
+                    $q->where('title', 'like', '%' . $keyword . '%');
+                });
+            });
         }
 
         if ($filterBy30Days) {
             $date30DaysAgo = now()->subDays(30);
-            $transactionQuery->where('transaction.created_at', '>=', $date30DaysAgo);
+            $transactionQuery->where('created_at', '>=', $date30DaysAgo);
         }
 
-        $transactionList = $transactionQuery
-            ->groupBy(
-                DB::raw('DATE(transaction.created_at)'),
-                'organization.org_name',
-                'event.title',
-                'transaction.commission_amount'
-            )
-            ->orderByDesc('created_at')
-            ->get();
+        $transactions = $transactionQuery->orderByDesc('created_at')->get();
+
+        // Group by date, organization, event and sum quantities
+        $transactionList = $transactions->groupBy(function($transaction) {
+            return $transaction->created_at->format('Y-m-d') . '|' .
+                   $transaction->organization->org_name . '|' .
+                   $transaction->event->title . '|' .
+                   $transaction->commission_amount;
+        })->map(function($group) {
+            $first = $group->first();
+            return [
+                'created_at' => $first->created_at->format('Y-m-d'),
+                'org_name' => $first->organization->org_name,
+                'title' => $first->event->title,
+                'ticketsold' => $group->sum(function($t) { return $t->payment->quantity; }),
+                'commission_amount' => $first->commission_amount
+            ];
+        })->sortByDesc('created_at')->values();
 
         return response()->json([
             'total_event' => $totalEvents,
@@ -151,22 +164,29 @@ class AdminController extends Controller
         if (!$admin) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
+
         // Counts for total users, total organizations, total ticket sold
-        $totalUsers = DB::table('user')->count();
-        $totalOrganizations = DB::table('organization')->count();
-        $ticketSold = DB::table('ticket')->where('status', 'bought')->count();
+        $totalUsers = User::count();
+        $totalOrganizations = Organization::count();
+        $ticketSold = Ticket::where('status', 'bought')->count();
 
         // Get the revenue by calculating the sum of all amount paid in the payment table
-        $totalRevenue = DB::table('payment')->where('payment_status', 'Completed')->sum('amount');
+        $totalRevenue = Payment::where('payment_status', 'Completed')->sum('amount');
 
-        $topEventsByTicket = DB::table('event')
-            ->join('ticket', 'ticket.event_id', '=', 'event.event_id')
-            ->join('organization','organization.org_id','=','event.org_id')
-            ->groupBy('event.event_id','event.title','organization.org_name')
-            ->where('ticket.status', 'bought')
-            ->select('organization.org_name','event.title', DB::raw('COUNT(ticket.ticket_id) as total_tickets_sold'), DB::raw('SUM(ticket.total_price) as revenue'))
-            ->orderByDesc('total_tickets_sold')
+        // Get top events by tickets sold
+        $tickets = Ticket::with(['event.organization'])
+            ->where('status', 'bought')
             ->get();
+
+        $topEventsByTicket = $tickets->groupBy('event_id')->map(function($eventTickets) {
+            $first = $eventTickets->first();
+            return [
+                'org_name' => $first->event->organization->org_name,
+                'title' => $first->event->title,
+                'total_tickets_sold' => $eventTickets->count(),
+                'revenue' => $eventTickets->sum('total_price')
+            ];
+        })->sortByDesc('total_tickets_sold')->values();
 
         return response()->json([
             'total_users' => $totalUsers,
@@ -188,35 +208,36 @@ class AdminController extends Controller
         if (!$admin) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        $activity_log = DB::table('activity_log')
-                ->select('created_at','description','subject_type','event','causer_id','causer_type')
-                ->orderBy('created_at', 'desc')
-                ->get();
+
+        $activity_log = Activity::select('created_at', 'description', 'subject_type', 'event', 'causer_id', 'causer_type')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         $all_activity_logs = [];
         foreach ($activity_log as $log) {
             $name = '';
             if ($log->causer_type === 'App\\Models\\User') {
-                $name = DB::table('user')->where('user_id', $log->causer_id)->value('username');
+                $user = User::where('user_id', $log->causer_id)->first();
+                $name = $user ? $user->username : '';
             } elseif ($log->causer_type === 'App\\Models\\Organization') {
-                $name = DB::table('organization')->where('org_id', $log->causer_id)->value('org_name');
+                $org = Organization::where('org_id', $log->causer_id)->first();
+                $name = $org ? $org->org_name : '';
             } elseif ($log->causer_type === 'App\\Models\\Admin') {
-                $name = DB::table('admin')->where('admin_id', $log->causer_id)->value('username');
+                $adminUser = Admin::where('admin_id', $log->causer_id)->first();
+                $name = $adminUser ? $adminUser->username : '';
             }
 
-            $all_activity_logs[] =
-                [
-                    'date' => $log->created_at,
-                    'detail' => $log->description,
-                    'activity' => $log->event,
-                    'causer_name' => $name
-                ];
+            $all_activity_logs[] = [
+                'date' => $log->created_at,
+                'detail' => $log->description,
+                'activity' => $log->event,
+                'causer_name' => $name
+            ];
         }
 
-        return response()->json(
-            [
-                'all_activity_logs' => $all_activity_logs
-            ]
-        );
+        return response()->json([
+            'all_activity_logs' => $all_activity_logs
+        ]);
     }
 
 
@@ -224,12 +245,11 @@ class AdminController extends Controller
 
     public function profile()
     {
-
         $admin = Auth::guard('admin-api')->user();
         $adminId = $admin->admin_id;
 
-        $adminInfo = DB::table('admin')->where('admin_id', $adminId)->first();
-        $adminInfo->profile_image = asset($adminInfo->profile_image); // Will auto-resolve to http://yourdomain.com/storage/Admin/admin20.png
+        $adminInfo = Admin::where('admin_id', $adminId)->first();
+        $adminInfo->profile_image = asset($adminInfo->profile_image);
 
         return response()->json([
             'admin_information' => $adminInfo
@@ -307,7 +327,6 @@ class AdminController extends Controller
             $event->banner = $path;
         }
 
-
         if (in_array($event->status, ['pending', 'rejected'])) {
             $event->status = 'pending';
             $event->admin_id = $admin->admin_id;
@@ -316,8 +335,8 @@ class AdminController extends Controller
 
         $event->save();
 
-         // Update event dates
-         if (isset($validated['dates'])) {
+        // Update event dates
+        if (isset($validated['dates'])) {
             if (in_array($event->status, ['pending', 'rejected'])) {
                 $existingDatesCount = EventDate::where('event_id', $request->event_id)->count();
                 $newDatesCount = 0;
@@ -328,7 +347,8 @@ class AdminController extends Controller
                         $newDatesCount++;
                     }
                 }
-                                // Validate before processing
+
+                // Validate before processing
                 if ($existingDatesCount + $newDatesCount > 3) {
                     return response()->json([
                         'error' => 'An event cannot have more than 3 dates.',
@@ -337,7 +357,6 @@ class AdminController extends Controller
                         ]
                     ], 422);
                 }
-
 
                 foreach ($validated['dates'] as $dateInfo) {
                     if (!empty($dateInfo['event_date_id'])) {
@@ -361,6 +380,7 @@ class AdminController extends Controller
                 }
             }
         }
+
         activity()
             ->causedBy(Auth::guard('admin-api')->user())
             ->withProperties(['event_id' => $request->event_id, 'event_title' => $event->title])
@@ -453,7 +473,7 @@ class AdminController extends Controller
             ->withProperties(['user_id' => $userId])
             ->log('Admin updated user profile');
 
-        $user = User::where('user_id',$userId)->first();
+        $user = User::where('user_id', $userId)->first();
 
         return response()->json([
             'message' => 'Updated Successfully',
@@ -481,10 +501,9 @@ class AdminController extends Controller
         if (!$organization->status) {
             $organization->tokens()->delete();
         }
+
         $organization->status = !$organization->status;
-
         $organization->save();
-
 
         return response()->json([
             'message' => $organization->status ? 'Organization activated successfully' : 'Organization deactivated successfully',
@@ -497,7 +516,6 @@ class AdminController extends Controller
 
     public function updateOrganizationInfo(Request $request, $organizationId)
     {
-
         $admin = Auth::guard('admin-api')->user();
 
         if (!$admin) {
@@ -513,7 +531,6 @@ class AdminController extends Controller
             'profile_image'  => 'image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-
         if ($request->hasFile('profile_image')) {
             $file = $request->file('profile_image');
             $filename = 'org_' . $organizationId . '_' . time() . '.' . $file->getClientOriginalExtension();
@@ -522,7 +539,8 @@ class AdminController extends Controller
         }
 
         Organization::where('org_id', $organizationId)->update($validated);
-        $organization = Organization::where('org_id',$organizationId)->first();
+        $organization = Organization::where('org_id', $organizationId)->first();
+
         activity()
             ->causedBy(Auth::guard('admin-api')->user())
             ->log('Admin upated organization profile');
@@ -530,112 +548,115 @@ class AdminController extends Controller
         return response()->json([
             'message' => 'Profile updated successfully.',
             'organization_information' => $organization
-        ],200);
+        ], 200);
     }
 
 
 
 
     public function getAllEvents(Request $request)
-    {
-        $admin = Auth::guard('admin-api')->user();
-        if (!$admin) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+{
+    $admin = Auth::guard('admin-api')->user();
+    if (!$admin) {
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }
 
-        $keyword = '%' . $request->keyword . '%';
-        $filter = $request->filter;
+    $keyword = $request->keyword;
+    $filter = $request->filter;
 
-        $totalEvents = DB::table('event')->count();
-        $eventQuery = DB::table('event')
-            ->join('event_category','event_category.event_category_id','=','event.event_category_id')
-            ->select('event.*','event_category.event_category_id','event_category.event_category_name')
-            ->join('event_date', 'event.event_id', '=', 'event_date.event_id')
-            ->distinct('event.event_id');
+    $totalEvents = Event::count();
 
-        if (!empty($keyword)) {
-            $eventQuery->whereAny(['event.title','event.description'], 'like', $keyword);
-        }
+    // Base query for events
+    $eventQuery = Event::with('eventCategory', 'eventDates');
 
-        if (!empty($filter)) {
-            $eventQuery->where('event_category.event_category_name', 'like', $filter);
-        }
+    if (!empty($keyword)) {
+        $eventQuery->where(function($query) use ($keyword) {
+            $query->where('title', 'like', '%' . $keyword . '%')
+                  ->orWhere('description', 'like', '%' . $keyword . '%');
+        });
+    }
 
-        $completedQuery = clone $eventQuery;
-        $upcomingQuery = clone $eventQuery;
+    if (!empty($filter)) {
+        $eventQuery->whereHas('eventCategory', function($query) use ($filter) {
+            $query->where('event_category_name', 'like', $filter);
+        });
+    }
 
-        $events = $eventQuery->orderBy('event.title')->get();
-        $totalApproved = $eventQuery->where('event.status','approved')->count();
+    $events = $eventQuery->orderBy('title')->get();
 
-        $completedEvents = $completedQuery
-            ->where(DB::raw("CONCAT(event_date.event_date, ' ', event_date.event_time)"), '<=', now())
-            ->get();
+    $totalApproved = Event::where('status', 'approved')->count();
 
+    // Get completed events (all dates have passed)
+    $completedEvents = Event::with('eventDates')
+        ->get()
+        ->filter(function($event) {
+            // Event is completed if ALL dates are in the past
+            return $event->eventDates->every(function($date) {
+                $eventDateTime = Carbon::parse($date->event_date . ' ' . $date->event_time);
+                return $eventDateTime->isPast();
+            });
+        })
+        ->values();
 
-        $upcomingEvents = $upcomingQuery
-            ->where('event.status','approved')
-            ->where(DB::raw("CONCAT(event_date.event_date, ' ', event_date.event_time)"), '>', now())
-            ->get();
+    // Get upcoming events (at least one future date)
+    $upcomingEvents = Event::where('status', 'approved')
+        ->with('eventDates')
+        ->get()
+        ->filter(function($event) {
+            // Event is upcoming if at least ONE date is in the future
+            return $event->eventDates->some(function($date) {
+                $eventDateTime = Carbon::parse($date->event_date . ' ' . $date->event_time);
+                return $eventDateTime->isFuture();
+            });
+        })
+        ->values();
 
-        $eventIds = $events->pluck('event_id')->toArray();
+    $eventCategory = EventCategory::select('event_category_id', 'event_category_name')->get();
 
+    $eventWithDates = [];
+    foreach ($events as $event) {
+        $eventFormattedDates = [];
 
-
-        $eventDates = collect();
-        if (!empty($eventIds)) {
-            $eventDates = DB::table('event_date')
-                ->whereIn('event_id', $eventIds)
-                ->get();
-        }
-
-        $datesGrouped = $eventDates->groupBy('event_id');
-        $eventWithDates = [];
-
-        foreach ($events as $event) {
-            $eventFormattedDates = [];
-            $allEventDates = $datesGrouped[$event->event_id] ?? [];
-
-            foreach ($datesGrouped[$event->event_id] ?? [] as $date) {
-                $eventFormattedDates[] = [
-                    'event_date_id' => $date->event_date_id,
-                    'event_date' => $date->event_date,
-                    'event_time' => $date->event_time,
-                    'ticket_price' => $date->ticket_price,
-                    'total_ticket' => $date->total_ticket,
-                ];
-            }
-
-            $firstDay = !empty($allEventDates) ? $allEventDates->min('event_date') : null;
-            $lastDay = !empty($allEventDates) ? $allEventDates->max('event_date') : null;
-
-            $eventCategory = DB::table('event_category')->select('event_category_id','event_category_name')->get();
-            $eventWithDates[] = [
-                'event_id' => $event->event_id,
-                'title' => $event->title,
-                'description' => $event->description,
-                'location' => $event->location,
-                'event_category_id' => $event->event_category_id,
-                'event_category_name' =>$event->event_category_name,
-                'status' => $event->status,
-                'banner' => $event->banner,
-                'first_event_day' => $firstDay,
-                'last_event_day' => $lastDay,
-                'dates' => $eventFormattedDates
+        foreach ($event->eventDates as $date) {
+            $eventFormattedDates[] = [
+                'event_date_id' => $date->event_date_id,
+                'event_date' => $date->event_date,
+                'event_time' => $date->event_time,
+                'ticket_price' => $date->ticket_price,
+                'total_ticket' => $date->total_ticket,
             ];
         }
 
+        $firstDay = $event->eventDates->min('event_date');
+        $lastDay = $event->eventDates->max('event_date');
 
-        activity()
-            ->causedBy(Auth::guard('admin-api')->user())
-            ->log('Admin viewed all events');
-
-        return response()->json([
-            'event_category' => $eventCategory,
-            'events' => $eventWithDates,
-            'total_events' => $totalEvents,
-            'total_approved_events' => $totalApproved,
-            'official_events' => $completedEvents,
-            'upcoming_events' => $upcomingEvents,
-        ], 200);
+        $eventWithDates[] = [
+            'event_id' => $event->event_id,
+            'title' => $event->title,
+            'description' => $event->description,
+            'location' => $event->location,
+            'event_category_id' => $event->event_category_id,
+            'event_category_name' => $event->eventCategory->event_category_name,
+            'status' => $event->status,
+            'banner' => $event->banner,
+            'first_event_day' => $firstDay,
+            'last_event_day' => $lastDay,
+            'dates' => $eventFormattedDates
+        ];
     }
+
+    activity()
+        ->causedBy(Auth::guard('admin-api')->user())
+        ->log('Admin viewed all events');
+
+    return response()->json([
+        'event_category' => $eventCategory,
+        'events' => $eventWithDates,
+        'total_events' => $totalEvents,
+        'total_approved_events' => $totalApproved,
+        'official_events' => $completedEvents,
+        'upcoming_events' => $upcomingEvents,
+    ], 200);
+}
+
 }

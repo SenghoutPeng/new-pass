@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller;
+use App\Models\Rating;
+use App\Models\EventDate;
+use App\Models\CheckinLog;
+use Carbon\Carbon;
 
 class RatingController extends Controller
 {
@@ -24,37 +27,34 @@ class RatingController extends Controller
             'rating.*.value' => 'required|integer|min:1|max:5',
         ]);
 
-        $checkRating = DB::table('rating')
-        ->where('user_id', $user->user_id)
-        ->where('event_id', $request->event_id)
-        ->first();
+        $checkRating = Rating::where('user_id', $user->user_id)
+            ->where('event_id', $request->event_id)
+            ->first();
 
         if ($checkRating) {
-        return response()->json(['message' => 'You have already rated this event.'], 409);
+            return response()->json(['message' => 'You have already rated this event.'], 409);
         }
 
-        $eventDate = DB::table('event_date')
-            ->where('event_id', $request->event_id)
+        $eventDate = EventDate::where('event_id', $request->event_id)
             ->max('event_date');
 
-        $now = date('Y-m-d');
-        if($eventDate >= $now)
-        {
+        $now = Carbon::today()->format('Y-m-d');
+
+        if ($eventDate >= $now) {
             return response()->json([
                 'error' => 'You can rate after the event end!'
             ], 403);
         }
 
-        $alreadyCheckedIn = DB::table('checkin_log')
-        ->where('user_id', $user->user_id)
-        ->exists();
+        $alreadyCheckedIn = CheckinLog::where('user_id', $user->user_id)
+            ->exists();
 
         if (!$alreadyCheckedIn) {
-        return response()->json(['error' => 'You cannot rate as you did not attend the event!'], 409);
+            return response()->json(['error' => 'You cannot rate as you did not attend the event!'], 409);
         }
 
         foreach ($request->rating as $ratingItem) {
-            DB::table('rating')->insert([
+            Rating::create([
                 'user_id' => $user->user_id,
                 'event_id' => $request->event_id,
                 'rating_category_id' => $ratingItem['category_id'],
@@ -70,7 +70,7 @@ class RatingController extends Controller
         return response()->json(['message' => 'Thank you for your feedback!'], 201);
     }
 
-    
+
 
 
     public function feedback(Request $request)
@@ -84,60 +84,52 @@ class RatingController extends Controller
         $organizationId = $organization->org_id;
         $eventId = $request->query('event_id');
 
-        // Base query for category ratings with event/org join
-        $categoryQuery = DB::table('rating')
-            ->join('rating_category', 'rating_category.rating_category_id', '=', 'rating.rating_category_id')
-            ->join('event', 'rating.event_id', '=', 'event.event_id')
-            ->where('event.org_id', $organizationId);
+        // Fetch ratings with relationships
+        $ratingsQuery = Rating::with(['ratingCategory', 'event', 'user'])
+            ->whereHas('event', function ($query) use ($organizationId) {
+                $query->where('org_id', $organizationId);
+            });
 
         if ($eventId) {
-            $categoryQuery->where('event.event_id', $eventId);
+            $ratingsQuery->where('event_id', $eventId);
         }
 
-        $categoryRatings = $categoryQuery
-            ->select(
-                'rating_category.rating_category_name',
-                DB::raw('AVG(rating.rating) as average_rating'),
-                DB::raw('COUNT(rating.rating_id) as total_ratings')
-            )
-            ->groupBy('rating_category.rating_category_name')
-            ->get();
+        $ratings = $ratingsQuery->get();
+
+        // Group by category and calculate averages in PHP
+        $categoryRatings = $ratings->groupBy('rating_category_id')->map(function ($categoryGroup) {
+            $firstRating = $categoryGroup->first();
+            return [
+                'rating_category_name' => $firstRating->ratingCategory->rating_category_name,
+                'average_rating' => round($categoryGroup->avg('rating'), 2),
+                'total_ratings' => $categoryGroup->count()
+            ];
+        })->values();
 
         // Calculate overall average and total ratings
-        $totalCategories = count($categoryRatings);
+        $totalCategories = $categoryRatings->count();
         $totalRatings = 0;
         $averageSum = 0;
 
         foreach ($categoryRatings as $item) {
-            $averageSum += floatval($item->average_rating);
-            $totalRatings += intval($item->total_ratings);
+            $averageSum += floatval($item['average_rating']);
+            $totalRatings += intval($item['total_ratings']);
         }
 
         $overallAverage = $totalCategories > 0 ? round($averageSum / $totalCategories, 2) : 0;
 
-        // Query recent feedback with optional event filter
-        $recentFeedbackQuery = DB::table('rating')
-            ->join('user', 'user.user_id', '=', 'rating.user_id')
-            ->join('event', 'event.event_id', '=', 'rating.event_id')
-            ->join('rating_category', 'rating_category.rating_category_id', '=', 'rating.rating_category_id')
-            ->where('event.org_id', $organizationId);
-
-        if ($eventId) {
-            $recentFeedbackQuery->where('event.event_id', $eventId);
-        }
-
-        $recentFeedback = $recentFeedbackQuery
-            ->select(
-                'rating.created_at as date',
-                'user.user_id as customer_id',
-                'user.username',
-                'event.event_id',
-                'event.title as event_name',
-                'rating_category.rating_category_name',
-                'rating.rating'
-            )
-            ->orderByDesc('rating.created_at')
-            ->get();
+        // Format recent feedback
+        $recentFeedback = $ratings->sortByDesc('created_at')->map(function ($rating) {
+            return [
+                'date' => $rating->created_at,
+                'customer_id' => $rating->user->user_id,
+                'username' => $rating->user->username,
+                'event_id' => $rating->event->event_id,
+                'event_name' => $rating->event->title,
+                'rating_category_name' => $rating->ratingCategory->rating_category_name,
+                'rating' => $rating->rating
+            ];
+        })->values();
 
         return response()->json([
             'average_rating' => $overallAverage,
