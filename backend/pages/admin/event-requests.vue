@@ -88,7 +88,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-
+const config = useRuntimeConfig()
 definePageMeta({
   layout: 'master',
   middleware: 'admin'
@@ -115,7 +115,7 @@ const getSanctumCsrfToken = () => {
 
 const fetchEventRequests = async () => {
   try {
-    const res = await fetch('/api/admin/event-requests', {
+    const res = await fetch(`${config.public.baseUrl}/api/admin/event-requests`, {
       credentials: 'include'
     })
     const data = await res.json()
@@ -127,7 +127,7 @@ const fetchEventRequests = async () => {
 
 const viewDetails = async (event_id) => {
   try {
-    const res = await fetch(`/api/admin/detail-event-request/${event_id}`, {
+    const res = await fetch(`${config.public.baseUrl}/api/admin/detail-event-request/${event_id}`, {
       credentials: 'include'
     })
     const data = await res.json()
@@ -146,7 +146,7 @@ const submitDecision = async (decision) => {
     const xsrfToken = getSanctumCsrfToken();
     if (!xsrfToken) return router.push('/admin/loginSite');
 
-    const response = await fetch(`/api/admin/approve-event`, {
+    const response = await fetch(`${config.public.baseUrl}/api/admin/approve-event`, {
       method: 'POST',
       credentials: 'include',
       headers: {

@@ -125,9 +125,8 @@
 </template>
 
 <script setup>
-
 import { onMounted, computed, ref } from 'vue'
-
+const config = useRuntimeConfig()
 definePageMeta({
     layout: 'master',
     middleware: 'admin'
@@ -136,7 +135,7 @@ definePageMeta({
 const {
   data: DashboardData,
   refresh
-} = useLazyFetch('/api/admin/dashboard', {
+} = useLazyFetch(`${config.public.baseUrl}/api/admin/dashboard`, {
   credentials: 'include',
   server: false,
   lazy: true

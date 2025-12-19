@@ -247,7 +247,7 @@
 <script setup>
 import { ref, computed, watch, reactive } from 'vue'
 import { useSanctumClient } from '#imports'
-
+const config = useRuntimeConfig()
 const client = useSanctumClient()
 
 definePageMeta({
@@ -255,7 +255,7 @@ definePageMeta({
   middleware: 'admin',
 })
 
-const { data: UserData, refresh } = useLazyFetch('/api/admin/users', {
+const { data: UserData, refresh } = useLazyFetch(`${config.public.baseUrl}/api/admin/users`, {
   credentials: 'include',
   server: false,
   lazy: true,
@@ -307,7 +307,7 @@ const toggleStatus = async (user) => {
   const originalStatus = user.status
   user.status = !user.status
   try {
-    await client(`/api/admin/toggle/user/${user.user_id}`, {
+    await client(`${config.public.baseUrl}/api/admin/toggle/user/${user.user_id}`, {
       method: 'PATCH',
       credentials: 'include',
     })
@@ -377,7 +377,7 @@ async function submitEditUser() {
       formData.append('profile_image', userProfile.profile_image)
     }
 
-    await client(`/api/admin/update/user/${userProfile.user_id}`, {
+    await client(`${config.public.baseUrl}/api/admin/update/user/${userProfile.user_id}`, {
       method: 'POST',
       body: formData,
       credentials: 'include',

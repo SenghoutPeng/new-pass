@@ -90,6 +90,7 @@
 </template>
 
 <script setup>
+const config = useRuntimeConfig()
 definePageMeta({
   layout: 'master',
   middleware: 'admin'
@@ -100,7 +101,7 @@ const {
   error,
   refresh,
   pending
-} = useLazyFetch('/api/admin/transaction', {
+} = useLazyFetch(`${config.public.baseUrl}/api/admin/transaction`, {
   credentials: 'include',
   server: false,
   lazy: true

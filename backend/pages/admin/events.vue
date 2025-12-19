@@ -119,7 +119,7 @@
 
         <div class="p-6">
           <div class="flex flex-col md:flex-row gap-6 mb-6">
-              <img :src="selectedEvent.banner ? `/storage/${selectedEvent.banner}` : 'https://placehold.co/600x400'"
+              <img :src="selectedEvent.banner ? `${config.public.baseUrl}/storage/${selectedEvent.banner}` : 'https://placehold.co/600x400'"
                  class="w-full md:w-1/2 h-64 object-cover rounded-lg" alt="Event banner">
             <div>
               <h2 class="text-2xl font-bold mb-2">{{ selectedEvent.title }}</h2>
@@ -293,7 +293,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useSanctumClient } from '#imports'
-
+const config = useRuntimeConfig()
 definePageMeta({
   layout: 'master',
   middleware: 'admin'
@@ -327,7 +327,7 @@ const fetchEvents = async () => {
   loading.value = true
   try {
     // Ensure the correct endpoint is called for admin's all events
-    const data = await client('/api/admin/events')
+    const data = await client(`${config.public.baseUrl}/api/admin/events`)
 
     // Map events to ensure banner URL is correct for display
     allEvents.value = data.events.map(event => ({
@@ -526,7 +526,7 @@ const updateEvent = async () => {
 
 
     // Correct URL (NO event_id in URL anymore)
-    const res = await client(`/api/admin/update/event`, { // <--- URL CHANGED
+    const res = await client(`${config.public.baseUrl}/api/admin/update/event`, { // <--- URL CHANGED
       method: 'POST', // This must be POST when using _method=PATCH with FormData
       body: formData,
       // Do NOT set Content-Type header manually for FormData

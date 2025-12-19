@@ -40,7 +40,7 @@
 
 <script setup>
 import { ref } from 'vue'
-
+const config = useRuntimeConfig();
 definePageMeta({
   layout: 'false',
   middleware: 'sanctum-guest'
@@ -75,7 +75,7 @@ const handleLogin = async () => {
     }
 
     // Step 3: Perform login request with X-XSRF-TOKEN header
-    const response = await fetch('/api/admin/login', {
+    const response = await fetch(`${config.public.baseUrl}/api/admin/login`, {
       method: 'POST',
       credentials: 'include',
       headers: {

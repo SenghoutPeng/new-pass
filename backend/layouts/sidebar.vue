@@ -68,7 +68,7 @@ import defaultImage from '~/assets/image/image.png'
 const imageUrl = computed(() => {
   return profile.value.image ? profile.value.image : defaultImage
 })
-
+const config = useRuntimeConfig();
 const profile = ref({
   name: '',
   email: '',
@@ -84,7 +84,7 @@ try {
     return;
   }
 
-  const res = await $fetch('/api/admin/profile', {
+  const res = await $fetch(`${config.public.baseUrl}/api/admin/profile`, {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${adminToken}`,

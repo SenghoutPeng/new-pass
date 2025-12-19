@@ -232,7 +232,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useSanctumClient } from '#imports'
-
+const config = useRuntimeConfig()
 definePageMeta({
   layout: 'master',
   middleware: 'admin',
@@ -240,7 +240,7 @@ definePageMeta({
 
 const client = useSanctumClient()
 
-const { data: OrganizationData, refresh } = useLazyFetch('/api/admin/organizations', {
+const { data: OrganizationData, refresh } = useLazyFetch(`${config.public.baseUrl}/api/admin/organizations`, {
   credentials: 'include',
   server: false,
   lazy: true,
@@ -308,7 +308,7 @@ const toggleStatus = async (org) => {
   const originalStatus = org.status
   org.status = !org.status
   try {
-    await client(`/api/admin/toggle/organization/${org.org_id}`, {
+    await client(`${config.public.baseUrl}/api/admin/toggle/organization/${org.org_id}`, {
       method: 'PATCH',
       credentials: 'include',
     })
@@ -363,7 +363,7 @@ const updateOrganization = async () => {
   formData.append('_method', 'PATCH');
 
   try {
-    const response = await client(`/api/admin/update/organization/${selectedOrg.value.org_id}`, {
+    const response = await client(`${config.public.baseUrl}/api/admin/update/organization/${selectedOrg.value.org_id}`, {
       method: 'PUT',
       body: formData,
       credentials: 'include',
