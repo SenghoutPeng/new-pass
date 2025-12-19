@@ -9,12 +9,12 @@
               d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
-       
+
       </div>
 
       <div class="flex items-center gap-2">
         <div class="dropdown dropdown-end">
-          <button class="btn border-0 bg-red-500" @click="handleLogout">
+          <button class="btn border-0 bg-red-500 text-white" @click="handleLogout">
             Sign Out
             </button>
 

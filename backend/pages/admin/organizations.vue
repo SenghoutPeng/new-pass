@@ -49,7 +49,7 @@
       <div class="min-h-screen bg-gray-100 p-6 mt-6 rounded-2xl">
         <div class="max-w-8xl mx-auto">
           <div class="mb-6">
-            <h1 class="text-3xl font-bold text-base-200 mb-4 mt-3">All Organizations</h1>
+            <h1 class="text-3xl text-black font-bold text-base-200 mb-4 mt-3">All Organizations</h1>
 
             <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
               <label class="input input-bordered bg-white flex items-center gap-2 w-64">
@@ -71,7 +71,7 @@
           <div class="overflow-x-auto shadow rounded-lg bg-white">
             <table class="table bg-white w-full">
               <thead>
-                <tr class="text-base-200 border-b border-gray-200">
+                <tr class="text-base-200 border-b border-gray-200 text-gray-500">
                   <th>Name</th>
                   <th>Email</th>
                   <th>Balance</th>
@@ -172,7 +172,7 @@
         <form method="dialog" class="modal-box bg-white rounded-lg text-dark p-6">
           <h3 class="text-lg font-bold mb-2">Organization Details</h3>
           <div v-if="selectedOrg">
-            <img :src="selectedOrg.profile_image" alt="Organization Avatar" class="w-32 h-32 rounded-full mt-4" />
+            <img :src="selectedOrg.profile_image" alt="Organization Avatar" class="w-32 aspect-square object-cover rounded-full mt-4" />
             <p class="mt-4"><strong>Organization Name:</strong> {{ selectedOrg.org_name }}</p>
             <p class="mt-2"><strong>Organization Email:</strong> {{ selectedOrg.email }}</p>
             <p class="mt-2"><strong>Contact Name:</strong> {{ selectedOrg.contact_name }}</p>

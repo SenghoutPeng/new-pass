@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use App\Models\User;
+use App\Models\Event;
+use App\Models\Ticket;
 use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
@@ -95,7 +97,7 @@ class UserController extends Controller
                 'quantity' => $request->quantity,
                 'payment_status' => 'Completed',
                 'payment_date' => now(),
-            ]);
+            ], 'payment_id');
 
             $checkInCodes = [];
             for ($i = 0; $i < $request->quantity; $i++) {
@@ -172,22 +174,30 @@ class UserController extends Controller
             $user = Auth::user();
             $userId = $user->user_id;
 
-            $eventsWithTickets = DB::table('ticket')
-                ->join('event', 'ticket.event_id', '=', 'event.event_id')
-                ->select('event.event_id','event.title',
-                    DB::raw('SUM(ticket.total_price) as total_price_paid'),
-                    DB::raw('COUNT(ticket.ticket_id) as total_tickets_purchased'),
-                    DB::raw('GROUP_CONCAT(DISTINCT ticket.ticket_code ORDER BY ticket.ticket_id) as checkin_codes'),
-                    DB::raw('MAX(ticket.purchase_date) as last_purchase_date'),
-                    DB::raw('MIN(ticket.purchase_date) as first_purchase_date')
-                )
-                ->where('ticket.user_id', $userId)
-                ->leftJoin('rating as user_rating', function ($join) use ($userId) {
-                    $join->on('user_rating.event_id', '=', 'ticket.event_id')
-                        ->where('user_rating.user_id', '=', $userId);
+            $eventsWithTickets = Event::query()
+                ->whereHas('tickets', function ($query) use ($userId) {
+                    $query->where('user_id', $userId);
                 })
-                ->addSelect(DB::raw('MAX(CASE WHEN user_rating.rating_id IS NOT NULL THEN TRUE ELSE FALSE END) as has_rated'))
-                ->groupBy('event.event_id', 'event.title')
+                ->withSum(['tickets as total_price_paid' => function($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                }], 'total_price')
+                ->withCount(['tickets as total_tickets_purchased' => function($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                }])
+                ->withMax(['tickets as last_purchase_date' => function($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                }], 'purchase_date')
+                ->withMin(['tickets as first_purchase_date' => function($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                }], 'purchase_date')
+                ->withExists(['ratings as has_rated' => function($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                }])
+                ->addSelect([
+                    'checkin_codes' => Ticket::selectRaw("string_agg(ticket_code, ',' ORDER BY ticket_id)")
+                        ->whereColumn('event_id', 'event.event_id')
+                        ->where('user_id', $userId)
+                ])
                 ->orderByDesc('last_purchase_date')
                 ->get();
 

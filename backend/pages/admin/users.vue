@@ -60,7 +60,7 @@
 
           <!-- Table Header -->
           <div class="mb-6">
-            <h1 class="text-3xl font-bold text-base-200 mb-4 mt-3">All Users</h1>
+            <h1 class="text-3xl text-black font-bold text-base-200 mb-4 mt-3">All Users</h1>
 
             <!-- Search and Filter Bar -->
             <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
@@ -97,7 +97,7 @@
           <div class="overflow-x-auto shadow rounded-lg bg-white">
             <table class="table w-full">
               <thead>
-                <tr class="text-base-200 border-b border-gray-200">
+                <tr class="text-base-200 border-b border-gray-200 text-gray-500">
                   <th>Name</th>
                   <th>Email</th>
                   <th>Balance</th>

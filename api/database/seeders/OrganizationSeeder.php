@@ -22,5 +22,7 @@ class OrganizationSeeder extends Seeder
             'contact_phone' => '092345678',
             'contact_email' => 'support@organization.com'
         ]);
+
+        Organization::where('org_id', 1)->update(['balance' => 60]);
     }
 }

@@ -122,7 +122,7 @@ definePageMeta({
 
 // Meta tags for SEO
 useHead({
-  title: 'MyTickets - Find and Book Amazing Events',
+  title: 'New Pass',
   meta: [
     { name: 'description', content: 'Discover and book tickets for amazing events. From music festivals to tech conferences, find your next experience.' }
   ]

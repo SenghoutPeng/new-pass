@@ -551,7 +551,7 @@ class AdminController extends Controller
             ->join('event_category','event_category.event_category_id','=','event.event_category_id')
             ->select('event.*','event_category.event_category_id','event_category.event_category_name')
             ->join('event_date', 'event.event_id', '=', 'event_date.event_id')
-            ->distinct('event.event_id');
+            ->groupby('event.event_id', 'event_category.event_category_id', 'event_category.event_category_name');
 
         if (!empty($keyword)) {
             $eventQuery->whereAny(['event.title','event.description'], 'like', $keyword);

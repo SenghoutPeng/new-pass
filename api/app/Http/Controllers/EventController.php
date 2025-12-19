@@ -363,6 +363,7 @@ public function getAllOnGoingEvents(Request $request)
 
         $eventId = DB::table('event')->insertGetId([
             'org_id' => $organization->org_id,
+            'admin_id' => 1,
             'title' => $validated['title'],
             'description' => $validated['description'],
             'location' => $validated['location'],
@@ -371,7 +372,7 @@ public function getAllOnGoingEvents(Request $request)
             'status' => 'pending',
             'created_at' => now(),
             'updated_at' => now()
-        ]);
+        ], 'event_id');
 
         foreach ($validated['dates'] as $dateInfo) {
             DB::table('event_date')->insert([

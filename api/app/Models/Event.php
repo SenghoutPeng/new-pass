@@ -19,4 +19,14 @@ class Event extends Model
         'banner',
         'admin_id'
     ];
+
+    public function tickets()
+        {
+            return $this->hasMany(Ticket::class, 'event_id', 'event_id');
+        }
+
+    public function ratings()
+        {
+            return $this->hasMany(Rating::class, 'event_id', 'event_id');
+        }
 }
