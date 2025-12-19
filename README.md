@@ -16,7 +16,7 @@
 
 - PHP >= 8.2 (with extensions: common, mysql, mbstring, xml, bcmath, curl, zip, gd, redis)
 - Composer
-- MariaDB/MySQL
+- MariaDB/MySQL (PostgreSQL support is not guaranteed)
 - Redis/Valkey (Optional)
 
 ## Setting Up Projects for Production
@@ -63,3 +63,11 @@ php artisan optimize
 ```
 
 Be sure to rerun `php artisan optimize` every time the source code or config is modified.
+
+## Seeded credentials
+
+| Type         | Email                   | Password |
+| ------------ | ----------------------- | -------- |
+| User         | jdoe@example.com        | password |
+| Organization | events@organization.com | password |
+| Admin        | admin@new-pass.com      | password |
