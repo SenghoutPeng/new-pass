@@ -12,7 +12,7 @@
     <template v-else-if="eventData">
       <div class="relative w-full h-100">
         <img
-          :src="eventData.banner ? `http://localhost:8000/storage/${eventData.banner}` : 'https://images.unsplash.com/photo-1522158637959-30385a09e0da?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'"
+          :src="eventData.banner ? `${config.public.baseUrl}/storage/${eventData.banner}` : 'https://images.unsplash.com/photo-1522158637959-30385a09e0da?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'"
           alt="Event Banner"
           class="absolute inset-0 w-full h-full object-cover"
         />

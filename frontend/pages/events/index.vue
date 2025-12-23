@@ -61,7 +61,7 @@
             @click="viewEvent(event)">
             <div class="flex">
               <div class="w-80 h-48 flex-shrink-0">
-                <img :src="`http://localhost:8000/storage/${event.banner}` || `http://localhost:8000/storage/banner/deafult.png`" :alt="event.title" class="w-full h-full object-cover" />
+                <img :src="`${config.public.baseUrl}/storage/${event.banner}` || `${config.public.baseUrl}/storage/banner/deafult.png`" :alt="event.title" class="w-full h-full object-cover" />
               </div>
 
               <div class="flex-1 p-6">
