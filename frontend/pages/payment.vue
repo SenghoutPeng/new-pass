@@ -6,7 +6,7 @@
         <h1 class="font-bold text-xl mb-4 text-center">Order Summary</h1>
 
         <template v-if="selected && selected.eventId">
-          <img :src="selected.banner ? `http://localhost:8000/storage/${selected.banner}` : 'https://via.placeholder.com/200?text=Event+Banner'"
+          <img :src="selected.banner ? `${config.public.baseUrl}/storage/${selected.banner}` : 'https://via.placeholder.com/200?text=Event+Banner'"
             alt="Event Banner" class="w-full h-40 object-cover rounded mb-3">
           <p class="font-bold text-lg mb-1">{{ selected.title }}</p>
           <p class="text-sm text-gray-600 mb-3">{{ selected.description }}</p>
