@@ -40,7 +40,7 @@ class OrganizationAuthController extends Controller
             ->withProperties([
                 'email' => $organization->email,
             ])
-            ->log('organization signed up');
+            ->log('Organization signed up');
 
         return response()->json([
             'message' => 'Account created successfully',
@@ -83,7 +83,7 @@ class OrganizationAuthController extends Controller
         ->withProperties([
             'email' => $organization->email,
         ])
-        ->log('organization logged in');
+        ->log('Organization logged in');
 
         return response()->json([
             'message' => 'Logged in successfully',
@@ -110,7 +110,7 @@ class OrganizationAuthController extends Controller
             ->withProperties([
                 'email' => $organization->email,
             ])
-            ->log('organization logged out');
+            ->log('Organization logged out');
 
         return response()->json(['message' => 'Logged out successfully']);
     }
@@ -147,7 +147,7 @@ class OrganizationAuthController extends Controller
         ->withProperties([
             'email' => $organization->email,
         ])
-        ->log('organization changed password');
+        ->log('Organization changed password');
         return response()->json(['message' => 'Password updated successfully.']);
     }
 
