@@ -37,6 +37,7 @@
         <h2 class="font-semibold text-sm mb-2" v-if="userType != 'organization'">Select Ticket</h2>
         <h2 class="font-semibold text-sm mb-2" v-if="userType === 'organization'">Ticket Information</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+
           <div v-for="(date, index) in eventData.dates" :key="index"
             class="flex items-center justify-between border rounded p-2 bg-white">
             <div class="text-xs">
@@ -46,11 +47,15 @@
               <div class="text-red-500 text-[10px]" v-else-if="date.total_ticket === 0">Sold Out</div>
               <div class="text-gray-500 text-[10px]" v-else>Tickets Left: N/A</div>
             </div>
-            <select v-if="userType === 'user' || userType === null" v-model="date.selectedQuantity"
+            <select  v-if="userType === 'user' || userType === null" v-model="date.selectedQuantity"
               class="border rounded text-xs px-1 py-0.5"
               :disabled="date.total_ticket === 0 || date.total_ticket === null">
               <option :value="0">0</option>
-              <option v-for="n in (date.total_ticket || 0)" :key="n" :value="n">{{ n }}</option>
+              <option v-for="n in Math.min(date.total_ticket, 3)" 
+          :key="n"
+          :value="n">
+    {{ n }}
+  </option>
             </select>
           </div>
           </div>

@@ -87,13 +87,15 @@
                 <td class="px-4 py-2">${{ parseFloat(ticket.total_price_paid).toFixed(2) }}</td>
                 <td class="px-4 py-2">
                   <button
-                    v-if="!ticket.has_rated"
-                    @click="openRatingModal(ticket.event_id)"
-                    class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                  >
-                    Rate
-                  </button>
-                  <span v-else class="text-gray-500 text-sm">Rated</span>
+  v-if="!ticket.has_rated"
+  @click="openRatingModal(ticket.event_id)"
+  class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+>
+  Rate
+</button>
+
+<span v-else class="text-gray-500 text-sm">Rated</span>
+
                 </td>
                 <td class="px-4 py-2"> <button
                     @click="openCheckinCodesModal(ticket)"
@@ -216,7 +218,7 @@ console.log('Profile Response:', userProfile.value);
 const form = ref({
   username: '',
   email: '',
-  profile_image: null, // Will hold the File object
+  profile_image: null,
 });
 
 const profileImagePreview = ref(`${config.public.baseUrl}/storage/User/default.png`); 
@@ -376,17 +378,35 @@ const categories = ref([
   { rating_category_id: 4, rating_category_name: 'Service', current_rating: 0 }
 ]);
 
-function openRatingModal(eventId) {
-  if (!user.value) {
-    alert('Please log in to submit a rating.');
-    router.push('/login');
-    return;
+async function openRatingModal(eventId) {
+  try {
+    const { data } = await useFetch(`${config.public.apiUrl}/events/${eventId}`, {
+      headers: {
+        Authorization: `Bearer ${authToken.value}`
+      },
+      server: false
+    })
+
+    if (!data.value) {
+      alert("Failed to load event")
+      return
+    }
+
+    const eventEnd = new Date(data.value.event_detail.last_event_day)
+
+    if (new Date() <= eventEnd) {
+      alert("You can only rate after the event ends.")
+      return
+    }
+
+    currentEventId.value = eventId
+    showRating.value = true
+
+  } catch (e) {
+    alert("Error loading event info")
   }
-  currentEventId.value = eventId;
-  categories.value.forEach(cat => cat.current_rating = 0);
-  submitError.value = null;
-  showRating.value = true;
 }
+
 
 function setRating(categoryId, value) {
   const cat = categories.value.find(c => c.rating_category_id === categoryId);
@@ -449,8 +469,6 @@ async function submitRating() {
 function cancelRating() {
   showRating.value = false;
 }
-
-// --- NEW: Check-in Codes Modal State and Functions ---
 const showCheckinCodesModal = ref(false); // Controls visibility of the check-in codes modal
 const currentCheckinCodes = ref([]); // Stores the list of codes for the selected event
 const currentCheckinEventTitle = ref(''); // Stores the title of the event for display
@@ -488,10 +506,3 @@ const copyCode = async (code) => {
 };
 </script>
 
-<style scoped>
-/* Your existing styles */
-input[type="text"],
-input[type="email"] {
-  background-color: transparent; /* Makes input background blend with parent */
-}
-</style>

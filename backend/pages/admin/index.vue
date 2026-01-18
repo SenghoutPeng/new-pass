@@ -11,7 +11,7 @@
       <!-- Stats Cards -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
         <!-- Total User -->
-        <div class="stat bg-white rounded-xl shadow-lg p-6">
+        <div class="stat bg-white rounded-xl border-gray-300 border p-6">
           <div class="stat-figure text-blue-500">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 stroke-current" fill="none"
               viewBox="0 0 24 24">
@@ -25,7 +25,7 @@
         </div>
 
         <!-- Total Org -->
-        <div class="stat bg-white rounded-xl shadow-lg p-6">
+        <div class="stat bg-white rounded-xl border-gray-300 border p-6">
           <div class="stat-figure text-green-500">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 stroke-current" fill="none"
               viewBox="0 0 24 24">
@@ -39,7 +39,7 @@
         </div>
 
         <!-- Total Revenue -->
-        <div class="stat bg-white rounded-xl shadow-lg p-6">
+        <div class="stat bg-white rounded-xl border-gray-300 border p-6">
           <div class="stat-figure text-red-500">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 stroke-current" fill="none"
               viewBox="0 0 24 24">
@@ -53,7 +53,7 @@
         </div>
 
         <!--Total ticket sold-->
-        <div class="stat bg-white rounded-xl shadow-lg p-6">
+        <div class="stat bg-white rounded-xl border-gray-300 border p-6">
           <div class="stat-figure text-red-500">
             <img width="50" height="50" src="https://img.icons8.com/ios/50/ticket--v1.png" alt="ticket--v1"/>
           </div>

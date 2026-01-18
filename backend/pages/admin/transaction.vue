@@ -10,7 +10,7 @@
 
       <!-- Cards -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-10">
-        <div class="bg-white rounded-lg p-6 shadow-md flex items-start space-x-4 border-2 border-gray-200">
+        <div class="bg-white rounded-lg p-6 flex items-start space-x-4 border-2 border-gray-200">
           <div class="bg-blue-400 text-blue-600 p-3 rounded-full flex-shrink-0">
             <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
               <path fill-rule="evenodd" d="M11.293 3.293a1 1 0 0 1 1.414 0l6 6 2 2a1 1 0 0 1-1.414 1.414L19 12.414V19a2 2 0 0 1-2 2h-3a1 1 0 0 1-1-1v-3h-2v3a1 1 0 0 1-1 1H7a2 2 0 0 1-2-2v-6.586l-.293.293a1 1 0 0 1-1.414-1.414l2-2 6-6Z" clip-rule="evenodd"/>
@@ -22,7 +22,7 @@
           </div>
         </div>
 
-        <div class="bg-white rounded-lg p-6 shadow-md flex items-start space-x-4 border-2 border-gray-200">
+        <div class="bg-white rounded-lg p-6 flex items-start space-x-4 border-2 border-gray-200">
           <div class="bg-green-100 text-green-600 p-3 rounded-full flex-shrink-0">
             <svg class="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24">
               <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -38,8 +38,8 @@
 
       <!-- Search Input -->
       <div class="flex justify-center">
-        <div class="bg-white border border-gray-200 rounded-lg shadow-md w-full max-w-md p-6">
-          <label class="input input-bordered bg-white flex items-center gap-2 w-full border border-black rounded-md">
+        <div class="bg-white border border-gray-200 rounded-lg w-full max-w-md p-6">
+          <label class="input input-bordered w-full bg-white flex items-center gap-2 border border-black rounded-md">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-50" fill="none"
               viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -52,7 +52,7 @@
 
       <!-- Transaction Table -->
       <div class="overflow-x-auto border border-gray-100 rounded-xl mt-10">
-        <table class="table w-full bg-gray-100 text-sm">
+        <table class="table w-full bg-white text-sm">
           <thead class="bg-base-200 text-xs text-base-content/70 uppercase">
             <tr>
               <th class="py-3 px-4">Date</th>
@@ -79,10 +79,14 @@
       </div>
 
       <!-- Pagination -->
-      <div class="flex justify-center items-center space-x-2 mt-4">
-        <button @click="currentPage--" :disabled="currentPage <= 1" class="px-3 py-1 border rounded">Prev</button>
-        <span>Page {{ currentPage }} of {{ totalPages }}</span>
-        <button @click="currentPage++" :disabled="currentPage >= totalPages" class="px-3 py-1 border rounded">Next</button>
+      <div class="flex justify-center items-center space-x-2 mt-6">
+        <button @click="currentPage--" :disabled="currentPage <= 1" class="px-3 py-1 border btn btn-outline rounded">Previous</button>
+        <button
+            class="btn bg-gray-200 border-gray-300 "
+            >
+              {{ currentPage }}
+        </button>
+        <button @click="currentPage++" :disabled="currentPage >= totalPages" class="px-3 py-1 border btn btn-outline rounded">Next</button>
       </div>
 
     </div>

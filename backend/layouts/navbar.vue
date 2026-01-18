@@ -14,7 +14,7 @@
 
       <div class="flex items-center gap-2">
         <div class="dropdown dropdown-end">
-          <button class="btn border-0 bg-red-500" @click="handleLogout">
+          <button class="btn border-0 rounded bg-red-500 text-white" @click="handleLogout">
             Sign Out
             </button>
 

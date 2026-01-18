@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-white p-8">
-    <div class="bg-gray-200 rounded-xl shadow px-6 py-6">
+    <div class="bg-gray-100 rounded-xl shadow px-6 py-6">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <h1 class="text-2xl font-bold text-gray-800">All Event Requests</h1>
         <div class="flex gap-3 w-full md:w-auto">
@@ -21,7 +21,7 @@
       <div class="overflow-x-auto rounded-xl border border-gray-200">
         <table class="table w-full bg-white">
           <thead>
-            <tr class="text-sm text-white bg-gray-800">
+            <tr class="text-sm text-base bg-base-200">
               <th class="py-3 px-4 text-left font-medium">Organizer</th>
               <th class="py-3 px-4 text-left font-medium">Event Name</th>
               <th class="py-3 px-4 text-left font-medium">Submit Date</th>
@@ -40,7 +40,7 @@
               <td class="py-3 px-4 text-gray-600">{{ request.created_at }}</td>
               <td class="py-3 px-4">
                 <span
-                  class="badge text-xs px-2 py-1 rounded-full"
+                  class="badge text-xs px-2 py-1 rounded"
                   :class="getStatusClass(request.status)"
                 >
                   {{ request.status }}
@@ -51,6 +51,7 @@
               </td>
             </tr>
           </tbody>
+
         </table>
       </div>
 

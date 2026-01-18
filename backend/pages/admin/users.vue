@@ -12,10 +12,10 @@
       <!-- Stats Cards -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <!-- Total Users -->
-        <div class="bg-white rounded-lg p-6 shadow-md flex items-start space-x-4 border-2 border-gray-200">
+        <div class="bg-white rounded-lg p-6 flex items-start space-x-4 border-2 border-gray-200">
           <div class="bg-blue-500 text-blue-600 p-3 rounded-full flex-shrink-0 flex items-center justify-center">
             <!-- Icon -->
-            <svg class="w-6 h-6 text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+            <svg class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
               <path fill-rule="evenodd" d="M8 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4H6Zm7.25-2.095c.478-.86.75-1.85.75-2.905a5.973 5.973 0 0 0-.75-2.906 4 4 0 1 1 0 5.811ZM15.466 20c.34-.588.535-1.271.535-2v-1a5.978 5.978 0 0 0-1.528-4H18a4 4 0 0 1 4 4v1a2 2 0 0 1-2 2h-4.535Z" clip-rule="evenodd"/>
             </svg>
           </div>
@@ -26,7 +26,7 @@
         </div>
 
         <!-- Total User Balance -->
-        <div class="bg-white rounded-lg p-6 shadow-md flex items-start space-x-4 border-2 border-gray-200">
+        <div class="bg-white rounded-lg p-6 flex items-start space-x-4 border-2 border-gray-200">
           <div class="bg-amber-200 text-amber-600 p-3 rounded-full flex-shrink-0 flex items-center justify-center">
             <!-- Icon -->
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -40,10 +40,10 @@
         </div>
 
         <!-- New This Month -->
-        <div class="bg-white rounded-lg p-6 shadow-md flex items-start space-x-4 border-2 border-gray-200">
+        <div class="bg-white rounded-lg p-6 flex items-start space-x-4 border-2 border-gray-200">
           <div class="bg-rose-400 text-rose-600 p-3 rounded-full flex-shrink-0 flex items-center justify-center">
             <!-- Icon -->
-            <svg class="w-6 h-6 text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+            <svg class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
               <path fill-rule="evenodd" d="M9 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4H7Zm8-1a1 1 0 0 1 1-1h1v-1a1 1 0 1 1 2 0v1h1a1 1 0 1 1 0 2h-1v1a1 1 0 1 1-2 0v-1h-1a1 1 0 0 1-1-1Z" clip-rule="evenodd"/>
             </svg>
           </div>
@@ -60,7 +60,7 @@
 
           <!-- Table Header -->
           <div class="mb-6">
-            <h1 class="text-3xl font-bold text-base-200 mb-4 mt-3">All Users</h1>
+            <h1 class="text-3xl font-bold mb-4 mt-3">All Users</h1>
 
             <!-- Search and Filter Bar -->
             <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
@@ -76,20 +76,20 @@
                 </label>
               </div>
 
-  <div>
-    <!-- Filter and Sort Buttons -->
-    <select v-model="yearFilter" class="btn btn-outline btn-sm">
-      <option value="all">All Years</option>
-      <option
-        v-for="year in joinedYears"
-        :key="year"
-        :value="year"
-      >
-        {{ year }}
-      </option>
-    </select>
-  </div>
-</div>
+            <div>
+              <!-- Filter and Sort Buttons -->
+              <select v-model="yearFilter" class="btn btn-outline btn-sm">
+                <option value="all">All Years</option>
+                <option
+                  v-for="year in joinedYears"
+                  :key="year"
+                  :value="year"
+                >
+                  {{ year }}
+                </option>
+              </select>
+            </div>
+          </div>
 
           </div>
 
@@ -97,7 +97,7 @@
           <div class="overflow-x-auto shadow rounded-lg bg-white">
             <table class="table w-full">
               <thead>
-                <tr class="text-base-200 border-b border-gray-200">
+                <tr class="text-base border-b bg-base-200 border-gray-200">
                   <th>Name</th>
                   <th>Email</th>
                   <th>Balance</th>
@@ -125,21 +125,21 @@
                   <td>{{ user.balance }}</td>
                   <td>{{ new Date(user.created_at).toLocaleDateString() }}</td>
                   <td>
-                    <span :class="user.status ? 'text-green-600 font-medium' : 'text-red-500 font-medium'">
+                    <span :class="user.status ? 'text-green-600 font-medium' : 'text-red-600 font-medium'">
                       {{ user.status ? 'Active' : 'Inactive' }}
                     </span>
                   </td>
                   <td>
                     <div class="flex gap-2">
                       <button
-                        class="btn btn-sm  btn-info bg-blue-500 text-white"
+                        class="btn btn-sm btn-info bg-blue-600 text-white"
                         @click="openEditModal(user)"
                       >
                         Edit
                       </button>
                       <button
                         class="btn btn-sm text-white"
-                        :class="user.status ? 'btn-error' : 'btn-success'"
+                        :class="user.status ? 'btn-error bg-red-600' : 'btn-success bg-green-600'"
                         @click="toggleStatus(user)"
                       >
                         {{ user.status ? 'Deactivate' : 'Activate' }}
@@ -152,7 +152,7 @@
           </div>
 
           <!-- Pagination Controls -->
-          <div class="flex justify-end mt-4 space-x-2">
+          <div class="flex justify-center items-center space-x-2 mt-6">
             <button
               class="btn btn-outline"
               :disabled="currentPage === 1"
@@ -162,13 +162,10 @@
             </button>
 
             <button
-              v-for="page in totalPages"
-              :key="page"
-              @click="currentPage = page"
-              :class="['btn btn-outline', currentPage === page ? 'btn-active' : '']"
+            class="btn bg-gray-200 border-gray-300 "
             >
-              {{ page }}
-            </button>
+              {{ currentPage }}
+          </button>
 
             <button
               class="btn btn-outline"
@@ -185,8 +182,13 @@
     <!-- Edit User Modal -->
     <div
       v-if="editModalOpen"
-      class="fixed inset-0 bg-gray-200 bg-opacity-50 flex items-center justify-center z-50"
+      class="fixed inset-0 flex content items-center justify-center z-50"
     >
+      <div
+        class="absolute inset-0 bg-black/50 "
+        @click="closeEditModal"
+      ></div>
+
       <div class="bg-white rounded-lg shadow-lg max-w-md w-full p-6 relative">
         <button
           @click="closeEditModal"
@@ -205,7 +207,7 @@
               id="username"
               v-model="userProfile.username"
               type="text"
-              class="input input-bordered w-full bg-amber-100"
+              class="input input-bordered w-full "
               required
             />
           </div>
@@ -216,7 +218,7 @@
               id="email"
               v-model="userProfile.email"
               type="email"
-              class="input input-bordered w-full bg-amber-100"
+              class="input input-bordered w-full"
               required
             />
           </div>

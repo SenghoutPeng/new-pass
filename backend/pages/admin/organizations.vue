@@ -49,7 +49,7 @@
       <div class="min-h-screen bg-gray-100 p-6 mt-6 rounded-2xl">
         <div class="max-w-8xl mx-auto">
           <div class="mb-6">
-            <h1 class="text-3xl font-bold text-base-200 mb-4 mt-3">All Organizations</h1>
+            <h1 class="text-3xl font-bold  mb-4 mt-3">All Organizations</h1>
 
             <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
               <label class="input input-bordered bg-white flex items-center gap-2 w-64">
@@ -71,7 +71,7 @@
           <div class="overflow-x-auto shadow rounded-lg bg-white">
             <table class="table bg-white w-full">
               <thead>
-                <tr class="text-base-200 border-b border-gray-200">
+                <tr class="text-base bg-base-200 border-b border-gray-200">
                   <th>Name</th>
                   <th>Email</th>
                   <th>Balance</th>
@@ -101,37 +101,33 @@
                   <td>{{ org.balance }}</td>
                   <td>{{ new Date(org.created_at).toLocaleDateString() }}</td>
                   <td>
-                    <span :class="org.status ? 'text-green-600 font-medium' : 'text-red-500 font-medium'">
+                    <span :class="org.status ? 'text-green-600 font-medium' : 'text-red-600 font-medium'">
                       {{ org.status ? 'Active' : 'Inactive' }}
                     </span>
                   </td>
                   <td>
                     <div class="flex gap-2">
                       <button
-                        class="btn btn-sm btn-info text-white"
+                        class="btn btn-sm btn-info bg-green-600 text-white"
                         @click="openModal(org)"
                       >
-                        <svg class="w-6 h-6 text-gray-800 dark:text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
-                        </svg>
+                        View
                       </button>
-
+                      <button
+                        class="btn btn-sm btn-blue bg-blue-600 text-white"
+                        @click="openEditModal(org)"
+                      >
+                        Edit
+                      </button>
                       <button
                         class="btn btn-sm text-white"
-                        :class="org.status ? 'btn-error' : 'btn-success'"
+                        :class="org.status ? 'btn-error bg-red-600' : 'btn-success bg-green-600'"
                         @click="toggleStatus(org)"
                       >
                         {{ org.status ? 'Deactivate' : 'Activate' }}
                       </button>
 
-                      <button
-                        class="btn btn-sm btn-warning text-white"
-                        @click="openEditModal(org)"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                      </button>
+                      
                     </div>
                   </td>
                 </tr>
@@ -139,7 +135,7 @@
             </table>
           </div>
 
-          <div class="flex justify-end mt-4 space-x-2">
+          <div class="flex justify-center items-center space-x-2 mt-6">
             <button
               class="btn btn-outline"
               :disabled="currentPage === 1"
@@ -148,14 +144,11 @@
               Previous
             </button>
 
-            <button
-              v-for="page in totalPages"
-              :key="page"
-              @click="currentPage = page"
-              :class="['btn btn-outline', currentPage === page ? 'btn-active' : '']"
+           <button
+            class="btn bg-gray-200 border-gray-300 "
             >
-              {{ page }}
-            </button>
+              {{ currentPage }}
+           </button>
 
             <button
               class="btn btn-outline"
@@ -172,7 +165,7 @@
         <form method="dialog" class="modal-box bg-white rounded-lg text-dark p-6">
           <h3 class="text-lg font-bold mb-2">Organization Details</h3>
           <div v-if="selectedOrg">
-            <img :src="selectedOrg.profile_image" alt="Organization Avatar" class="w-32 h-32 rounded-full mt-4" />
+            <img :src="selectedOrg.profile_image" alt="Organization Avatar"  />
             <p class="mt-4"><strong>Organization Name:</strong> {{ selectedOrg.org_name }}</p>
             <p class="mt-2"><strong>Organization Email:</strong> {{ selectedOrg.email }}</p>
             <p class="mt-2"><strong>Contact Name:</strong> {{ selectedOrg.contact_name }}</p>
@@ -181,7 +174,7 @@
             <p class="mt-2"><strong>Joined:</strong> {{ new Date(selectedOrg.created_at).toLocaleDateString() }}</p>
           </div>
           <div class="modal-action">
-            <button class="btn btn-accent text-white">Close</button>
+            <button class="btn btn-error bg-red-600 text-white">Close</button>
           </div>
         </form>
       </dialog>
@@ -192,37 +185,37 @@
           <div v-if="editOrgData" class="space-y-4">
             <div>
               <label for="edit_org_name" class="block text-sm font-medium text-gray-700">Organization Name</label>
-              <input type="text" id="edit_org_name" v-model="editOrgData.org_name" class="mt-1 block w-full input input-bordered bg-amber-100" />
+              <input type="text" id="edit_org_name" v-model="editOrgData.org_name" class="mt-1 block w-full input input-bordered " />
               <p v-if="validationErrors.org_name" class="text-red-500 text-xs mt-1">{{ validationErrors.org_name[0] }}</p>
             </div>
             <div>
               <label for="edit_email" class="block text-sm font-medium text-gray-700">Organization Email</label>
-              <input type="email" id="edit_email" v-model="editOrgData.email" class="mt-1 block w-full input input-bordered bg-amber-100" />
+              <input type="email" id="edit_email" v-model="editOrgData.email" class="mt-1 block w-full input input-bordered " />
               <p v-if="validationErrors.email" class="text-red-500 text-xs mt-1">{{ validationErrors.email[0] }}</p>
             </div>
             <div>
               <label for="edit_contact_name" class="block text-sm font-medium text-gray-700">Contact Name</label>
-              <input type="text" id="edit_contact_name" v-model="editOrgData.contact_name" class="mt-1 block w-full input input-bordered bg-amber-100" />
+              <input type="text" id="edit_contact_name" v-model="editOrgData.contact_name" class="mt-1 block w-full input input-bordered " />
               <p v-if="validationErrors.contact_name" class="text-red-500 text-xs mt-1">{{ validationErrors.contact_name[0] }}</p>
             </div>
             <div>
               <label for="edit_contact_email" class="block text-sm font-medium text-gray-700">Contact Email</label>
-              <input type="email" id="edit_contact_email" v-model="editOrgData.contact_email" class="mt-1 block w-full input input-bordered bg-amber-100" />
+              <input type="email" id="edit_contact_email" v-model="editOrgData.contact_email" class="mt-1 block w-full input input-bordered " />
               <p v-if="validationErrors.contact_email" class="text-red-500 text-xs mt-1">{{ validationErrors.contact_email[0] }}</p>
             </div>
             <div>
               <label for="edit_contact_phone" class="block text-sm font-medium text-gray-700">Contact Phone</label>
-              <input type="text" id="edit_contact_phone" v-model="editOrgData.contact_phone" class="mt-1 block w-full input input-bordered bg-amber-100" />
+              <input type="text" id="edit_contact_phone" v-model="editOrgData.contact_phone" class="mt-1 block w-full input input-bordered " />
               <p v-if="validationErrors.contact_phone" class="text-red-500 text-xs mt-1">{{ validationErrors.contact_phone[0] }}</p>
             </div>
           </div>
           <div class="modal-action">
-            <button type="submit" class="btn btn-primary">Update</button>
+            <button type="submit" class="btn btn-primary bg-blue-600 text-white">Update</button>
             <button type="button" class="btn" @click="closeEditModal">Cancel</button>
           </div>
         </form>
         <form method="dialog" class="modal-backdrop">
-          <button @click="closeEditModal">close</button>
+          <button @click="closeEditModal" class="btn btn-error bg-blue-600">Close</button>
         </form>
       </dialog>
     </div>

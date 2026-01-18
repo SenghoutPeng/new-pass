@@ -10,40 +10,70 @@
 
       <!-- Stats Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div class="bg-white border border-gray-200 rounded-lg shadow p-6">
+        <div class="bg-white border border-gray-200 rounded-lg p-6">
           <h3 class="text-gray-500 text-sm font-medium">Total Events</h3>
           <p class="text-2xl font-bold text-gray-900">{{ stats.total_events }}</p>
         </div>
-        <div class="bg-white border border-gray-200 rounded-lg shadow p-6">
+        <div class="bg-white border border-gray-200 rounded-lg p-6">
           <h3 class="text-gray-500 text-sm font-medium">Approved Events</h3>
           <p class="text-2xl font-bold text-gray-900">{{ stats.total_approved_events }}</p>
         </div>
-        <div class="bg-white border border-gray-200 rounded-lg shadow p-6">
+        <div class="bg-white border border-gray-200 rounded-lg p-6">
           <h3 class="text-gray-500 text-sm font-medium">Upcoming Events</h3>
           <p class="text-2xl font-bold text-gray-900">{{ stats.upcoming_events.length }}</p>
         </div>
       </div>
 
-      <!-- Search & Filter -->
-      <div class="flex flex-col md:flex-row justify-between gap-4 mb-6">
-        <div class="bg-white border border-gray-200 rounded-lg shadow-md p-6 w-full md:w-1/2">
-          <label class="input input-bordered bg-white flex items-center gap-2 w-full border border-black rounded-md">
+          <!-- Search & Category Filter -->
+      <div class="flex flex-col gap-4 mb-6">
+
+        <!-- Search Bar -->
+        <div class="bg-white border border-gray-200 rounded-lg p-6 w-full">
+          <label class="input bg-white flex items-center gap-2 w-full  border border-base rounded-md">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-50" fill="none"
               viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-            <input v-model="searchQuery" class="grow" type="text" placeholder="Search events..." />
+            <input 
+              v-model="searchQuery" 
+              class="grow" 
+              type="text"
+              placeholder="Search events..."
+            />
           </label>
         </div>
-        <div class="bg-white border border-gray-200 rounded-lg shadow-md p-6 w-full md:w-1/2">
-          <select v-model="categoryFilter" class="select select-bordered w-full bg-gray-200">
-            <option value="">All Categories</option>
-            <option v-for="[name, id] in categories" :key="id" :value="id">{{ name }}</option>
-          </select>
+
+        <!-- Categories Checkboxes -->
+        <div class="bg-white border border-gray-200 rounded-lg p-6 w-full">
+          <h3 class="font-semibold text-gray-700 mb-2">Categories</h3>
+          <div class="flex flex-wrap gap-4">
+            <label
+              v-for="[name, id] in categories"
+              :key="id"
+              class="flex items-center gap-2 cursor-pointer"
+            >
+              <input
+                type="checkbox"
+                :value="id"
+                v-model="categoryFilter"
+                class="checkbox checkbox-sm rounded"
+              />
+              <span class="text-gray-700">{{ name }}</span>
+            </label>
+          </div>
+          <button
+            v-if="categoryFilter.length"
+            class="mt-3 text-sm text-blue-600 hover:underline"
+            @click="categoryFilter = []"
+          >
+            Clear categories
+          </button>
         </div>
+
       </div>
 
+      
       <!-- Tabs -->
       <div class="tabs mb-6">
         <a class="tab tab-bordered" :class="{ 'tab-active': activeTab === 'all' }" @click="activeTab = 'all'">All Events</a>
@@ -55,7 +85,7 @@
       <div class="overflow-x-auto rounded-xl border border-gray-200 mb-10">
         <table class="table w-full bg-white">
           <thead>
-            <tr class="text-sm text-white bg-gray-800">
+            <tr class="text-sm text-base bg-base-200">
               <th class="py-3 px-4 text-left font-medium">Event Name</th>
               <th class="py-3 px-4 text-left font-medium">Category</th>
               <th class="py-3 px-4 text-left font-medium">Location</th>
@@ -74,13 +104,13 @@
                 <span v-if="event.first_event_day !== event.last_event_day">to {{ formatDate(event.last_event_day) }}</span>
               </td>
               <td class="py-3 px-4">
-                <span class="badge text-xs px-2 py-1 rounded-full" :class="getStatusClass(event.status)">
+                <span class="badge text-xs px-2 py-1 rounded" :class="getStatusClass(event.status)">
                   {{ event.status }}
                 </span>
               </td>
               <td class="py-3 px-4">
-                <button class="btn btn-sm btn-outline mr-2" @click="viewDetails(event)">View</button>
-                <button class="btn btn-sm btn-primary" @click="editEvent(event)">Edit</button>
+                <button class="btn btn-sm bg-green-600 text-white border-0 mr-2" @click="viewDetails(event)">View</button>
+                <button class="btn btn-sm btn-active  bg-blue-600 text-white" @click="editEvent(event)">Edit</button>
               </td>
             </tr>
           </tbody>
@@ -109,8 +139,8 @@
     </div>
 
     <!-- Event Details Modal -->
-    <div v-if="selectedEvent" class="fixed inset-0 w-full h-full bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl max-h-[90vh] overflow-auto relative">
+    <div v-if="selectedEvent" class="fixed inset-0 w-full h-full bg-black/50  flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-auto relative">
         <button @click="selectedEvent = null" class="absolute top-4 right-4 btn btn-circle btn-ghost">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -168,8 +198,8 @@
     </div>
 
     <!-- Edit Event Modal -->
-    <div v-if="editingEvent" class="fixed inset-0 w-full h-full bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl max-h-[90vh] overflow-auto relative">
+    <div v-if="editingEvent" class="fixed inset-0 w-full h-full bg-black/50  flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-auto relative">
         <button @click="editingEvent = null" class="absolute top-4 right-4 btn btn-circle btn-ghost">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -312,7 +342,7 @@ const selectedEvent = ref(null)
 const editingEvent = ref(null)
 const newBannerFile = ref(null)
 const searchQuery = ref('')
-const categoryFilter = ref('')
+const categoryFilter = ref([])
 const currentPage = ref(1)
 const itemsPerPage = ref(10)
 const loading = ref(false)
@@ -377,9 +407,9 @@ const filteredEvents = computed(() => {
   }
   
   // Apply category filter
-  if (categoryFilter.value) {
-    events = events.filter(event => event.event_category_id == categoryFilter.value)
-  }
+  if (categoryFilter.value.length > 0) {
+  events = events.filter(event => categoryFilter.value.includes(event.event_category_id))
+}
   
   // Apply tab filter
   if (activeTab.value === 'upcoming') {

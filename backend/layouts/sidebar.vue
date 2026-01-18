@@ -64,7 +64,7 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
-import defaultImage from '~/assets/image/image.png'
+import defaultImage from '~/assets/images/image.png'
 
 const imageUrl = computed(() => {
   return profile.value.image ? profile.value.image : defaultImage

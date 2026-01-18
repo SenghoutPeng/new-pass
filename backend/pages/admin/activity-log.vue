@@ -43,23 +43,26 @@
       </div>
 
       <!-- Pagination -->
-        <div class="mt-6 flex justify-between items-center">
+        <div class="flex justify-center items-center space-x-2 mt-6">
         <button 
-            class="btn btn-outline btn-sm btn-neutral"
+            class="btn btn-outline btn-neutral"
             :disabled="currentPage === 1"
             @click="currentPage--"
         >
-            « Prev
+            Previous
         </button>
 
-        <div class="text-sm font-medium text-black">Page {{ currentPage }}</div>
-
-        <button 
-            class="btn btn-outline btn-sm btn-neutral"
+        <button
+            class="btn bg-gray-200 border-gray-300 "
+            >
+              {{ currentPage }}
+        </button>
+        <button
+            class="btn btn-outline btn-neutral"
             :disabled="endIndex >= filteredActivities.length"
             @click="currentPage++"
         >
-            Next »
+            Next
         </button>
         </div>
     </div>
