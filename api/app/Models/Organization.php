@@ -23,6 +23,7 @@ class Organization extends Authenticatable
             'contact_name',
             'contact_phone',
             'contact_email',
+            'profile_image',
     ];
 
     protected $hidden = [

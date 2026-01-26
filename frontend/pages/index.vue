@@ -73,6 +73,64 @@
         </div>
       </section>
 
+      <section v-if="!isAuthenticated" class="py-12 bg-gray-50" >
+        <div class="container mx-auto px-6">
+          <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Solutions For Everyone</h2>
+          <div class="flex justify-center gap-8">
+            <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+              <h3 class="text-2xl font-bold text-center mb-4">For Attendees</h3>
+              <ul class="space-y-3 text-gray-600">
+                <li class="flex items-start">
+                  <span class="text-green-500 mr-2">&#10003;</span>
+                  Discover and attend events that matter.
+                </li>
+                <li class="flex items-start">
+                  <span class="text-green-500 mr-2">&#10003;</span>
+                  Quick and secure ticket purchases.
+                </li>
+                <li class="flex items-start">
+                  <span class="text-green-500 mr-2">&#10003;</span>
+                  Digital tickets accessible on any device.
+                </li>
+              </ul>
+              <div class="text-center mt-6">
+                <button
+                  @click="navigateToEvents"
+                  class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
+                >
+                  Find Events
+                </button>
+              </div>
+            </div>
+            <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+              <h3 class="text-2xl font-bold text-center mb-4">For Event Organizers</h3>
+              <ul class="space-y-3 text-gray-600">
+                <li class="flex items-start">
+                  <span class="text-green-500 mr-2">&#10003;</span>
+                  Create, promote, and manage your events.
+                </li>
+                <li class="flex items-start">
+                  <span class="text-green-500 mr-2">&#10003;</span>
+                  Comprehensive sales analytics.
+                </li>
+                <li class="flex items-start">
+                  <span class="text-green-500 mr-2">&#10003;</span>
+                  Streamlined check-in and attendance tracking.
+                </li>
+              </ul>
+              <div class="text-center mt-6">
+                <button
+                  @click="navigateToCreateEvent"
+                  class="border border-blue-500 text-blue-500 px-6 py-2 rounded-lg hover:bg-blue-50"
+                >
+                  Create Event
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
       <!-- HOW TO BUY -->
       <section class="py-12 bg-white">
         <div class="container mx-auto px-6 text-center">
@@ -104,21 +162,17 @@ definePageMeta({
   layout: 'master'
 })
 
-useHead({
-  title: 'MyTickets - Find and Book Amazing Events',
-  meta: [
-    {
-      name: 'description',
-      content: 'Discover and book tickets for amazing events.'
-    }
-  ]
-})
 
-const config = useRuntimeConfig()
 
 const searchQuery = ref('')
 const searched = ref(false)
-
+const { isAuthenticated } = useSanctumAuth()
+const navigateToCreateEvent = () => {
+  navigateTo('/organization/create-event')
+}
+const navigateToEvents = () => {
+  navigateTo('/events')
+}
 const handleSearch = () => {
   if (!searchQuery.value.trim()) return
   searched.value = true

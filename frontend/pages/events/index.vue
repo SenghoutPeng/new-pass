@@ -19,21 +19,36 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div class="flex gap-8">
         <aside class="w-64 flex-shrink-0">
-          <div class="bg-white rounded-lg shadow-sm p-6">
+          <div class="bg-white rounded-lg border border-gray-300 p-6">
             <h2 class="text-lg font-semibold text-gray-900 mb-4">Filters</h2>
 
     <div class="mb-6">
       <h3 class="text-sm font-medium text-gray-700 mb-3">Category</h3>
       <div class="space-y-2">
-        <label v-for="category in categories" :key="category.id" class="flex items-center">
-          <input v-model="selectedCategory" :value="category.id" type="radio"
-            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-            @change="fetchEvents" />
-          <span class="ml-3 text-sm text-gray-600 flex items-center">
-            <component :is="category.icon" class="w-4 h-4 mr-2" :class="category.color" />
-            {{ category.name }}
-          </span>
-        </label>
+  <label
+  v-for="category in categories"
+  :key="category.id"
+  class="flex items-center space-x-2"
+>
+  <input
+    type="checkbox"
+    v-model="selectedCategory"
+    :value="category.id"
+    @change="fetchEvents"
+    class="h-4 w-4 text-blue-600 border border-gray-300 rounded"
+  />
+
+  <span class="text-sm text-gray-600 flex items-center">
+    <component
+      :is="category.icon"
+      class="w-4 h-4 mr-2"
+      :class="category.color"
+    />
+    {{ category.name }}
+  </span>
+</label>
+
+
       </div>
     </div>
 
@@ -51,13 +66,13 @@
       </aside>
 
       <main class="flex-1">
-        <div class="mb-6">
-          <h1 class="text-2xl font-bold text-gray-900">All Events</h1>
+        <div class="mb-3">
+          <h1 class="text-2xl font-bold text-gray-900">EVENTS</h1>
         </div>
 
         <div class="space-y-6">
           <div v-for="event in paginatedEvents" :key="event.event_id"
-            class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+            class="bg-white rounded-lg  border border-gray-300 overflow-hidden  hover:shadow transition-shadow cursor-pointer"
             @click="viewEvent(event)">
             <div class="flex">
               <div class="w-80 h-48 flex-shrink-0">
@@ -135,7 +150,7 @@ definePageMeta({
 const config = useRuntimeConfig()
 // Reactive data
 const searchQuery = ref('')
-const selectedCategory = ref('') 
+const selectedCategory = ref([])
 const selectedDate = ref('all')
 const currentPage = ref(1)
 const itemsPerPage = 10; 
@@ -210,6 +225,7 @@ const debounce = (func, delay) => {
   };
 };
 
+
 // Fetch events function
 const {
   data: apiResponse,
@@ -217,31 +233,33 @@ const {
 } = useLazyFetch(`${config.public.apiUrl}/on-going-events`, {
   server: false,
   lazy: true,
-  // Now watching 'selectedCategory' (single string)
-  watch: [searchQuery, selectedCategory], 
-  transform: (data) => data.events, // Directly get the 'events' array
+  watch: [searchQuery], 
+  transform: (data) => data.events,
   params: {
     keyword: searchQuery,
-    filter: computed(() => selectedCategory.value), // Send selected category as a string
   },
 })
 
-const debouncedFetchEvents = debounce(fetchEvents, 300); // Debounce search input
+const debouncedFetchEvents = debounce(fetchEvents, 300); 
 
 
 // Computed properties
-const events = computed(() => apiResponse.value || []) // Ensure events is always an array
-
+const events = computed(() => apiResponse.value || []) 
 const filteredEvents = computed(() => {
   let filtered = events.value;
 
-  // Filter by selected date (this will be done client-side since your API doesn't seem to support date filtering directly)
+  if (selectedCategory.value.length > 0) {
+    filtered = filtered.filter(event => 
+      selectedCategory.value.includes(event.event_category_name)
+    );
+  }
+
+  // Filter by selected date
   if (selectedDate.value !== 'all') {
     const today = new Date().toDateString();
     const tomorrow = new Date(Date.now() + 86400000).toDateString();
 
     filtered = filtered.filter(event => {
-      // Assuming event.dates is an array of date objects with 'event_date'
       if (!event.dates || event.dates.length === 0) return false;
 
       const eventDates = event.dates.map(d => new Date(d.event_date).toDateString());
@@ -338,20 +356,8 @@ const getDisplayPrice = (dates) => {
   }
 };
 
-
 const viewEvent = (event) => {
-  console.log('Navigating to event:', event);
-  console.log('Event ID:', event.event_id); // CHECK THIS IN YOUR BROWSER CONSOLE
-
   navigateTo(`/events/${event.event_id}`);
 }
 
-// SEO
-useHead({
-  title: 'All Events - NEWPASS',
-  meta: [{
-    name: 'description',
-    content: 'Discover amazing events in Phnom Penh. Find concerts, festivals, conferences, and sports events.'
-  }]
-})
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <h1 class="text-2xl font-bold mb-6">User Information</h1>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <div class="bg-white shadow rounded-lg p-4 text-center">
@@ -13,9 +13,12 @@
           <div class="text-gray-600 text-sm">Completed Purchases</div>
           <div class="text-xl font-bold">{{ userProfile?.total_purchases || 0 }}</div>
         </div>
-        <div class="bg-white shadow rounded-lg p-4 text-center">
+        <div class="bg-white shadow rounded-lg p-4 text-center flex justify-between">
+          <div>
           <div class="text-gray-600 text-sm">Total Spending</div>
           <div class="text-xl font-bold">${{ userProfile?.total_spending ? parseFloat(userProfile.total_spending).toFixed(2) : '0.00' }}</div>
+          </div>
+           <button @click="goToRecharge" type="button" class="btn btn-sm p-4 bg-green-600 text-white py-2 rounded hover:bg-green-700 font-bold">Recharge</button>
         </div>
       </div>
 
@@ -33,39 +36,38 @@
             </div>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>ID: <span class="text-gray-700">{{ userProfile?.user_id || 'N/A' }}</span></div>
-            <div>Name:
+            <div> <span class="font-semibold">ID:</span> <span class="text-gray-700">{{ userProfile?.user_id || 'N/A' }}</span></div>
+            <div> <span class="font-semibold">Name: </span>
               <input type="text" v-model="form.username" class="text-gray-700 border-b border-gray-300 focus:outline-none focus:border-blue-500">
             </div>
-            <div>Email:
+            <div><span  class="font-semibold">Email: </span>
               <input type="email" v-model="form.email" class="text-gray-700 border-b border-gray-300 focus:outline-none focus:border-blue-500">
             </div>
             <div class="flex items-center">
-              <span class="mr-2">Password:</span>
+              <span class="mr-2 font-semibold">Password:</span>
               <span class="text-gray-700">********</span>
-              <button @click="goToChangePassword" type="button" class="ml-2 bg-blue-500 text-white text-sm px-2 py-1 rounded cursor-pointer">Change</button>
+              <button @click="goToChangePassword" type="button" class="ml-2 font-bold bg-blue-600 hover:bg-blue-700 text-white text-sm px-2 py-1 rounded cursor-pointer">Change</button>
             </div>
           </div>
           <div v-if="saveError" class="text-red-500 text-sm mt-4">{{ saveError }}</div>
           <div v-if="saveSuccess" class="text-green-500 text-sm mt-4">{{ saveSuccess }}</div>
           <div class="mt-6 flex space-x-4">
-            <button type="submit" :disabled="savingChanges" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 disabled:opacity-50">
+            <button type="submit" :disabled="savingChanges" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 font-bold disabled:opacity-50">
               {{ savingChanges ? 'Saving...' : 'Save Changes' }}
             </button>
-            <button @click="goToRecharge" type="button" class="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600">Recharge Balance</button>
           </div>
         </form>
       </div>
 
       <div>
-        <h2 class="text-xl font-semibold mb-4">Tickets</h2>
+        <h2 class="text-xl font-semibold mb-4">TICKETS</h2>
         <div v-if="pendingTickets || pendingProfile" class="text-center text-gray-600">Loading user data and tickets...</div>
         <div v-else-if="errorTickets || errorProfile" class="text-center text-red-500">
           Error loading data: {{ errorTickets?.message || errorProfile?.message || 'Unknown error' }}. Make sure you are logged in.
         </div>
         <div v-else-if="userTickets && userTickets.length > 0" class="bg-white shadow rounded-lg overflow-x-auto">
           <table class="min-w-full text-sm text-left">
-            <thead class="bg-gray-100">
+            <thead class="bg-gray-100 text-center">
               <tr>
                 <th class="px-4 py-2">TITLE</th>
                 <th class="px-4 py-2">STATUS</th>
@@ -77,8 +79,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="ticket in userTickets" :key="ticket.event_id" class="border-t">
-                <td class="px-4 py-2">{{ ticket.title }}</td>
+              <tr v-for="ticket in userTickets" :key="ticket.event_id" class="border-t text-center">
+                <td class="px-4 py-2 font-semibold">{{ ticket.title }}</td>
                 <td class="px-4 py-2">
                   <span :class="getStatusClass('bought')" class="px-2 py-1 rounded text-xs font-medium">COMPLETED</span>
                 </td>
@@ -89,17 +91,16 @@
                   <button
   v-if="!ticket.has_rated"
   @click="openRatingModal(ticket.event_id)"
-  class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+  class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 font-bold"
 >
   Rate
 </button>
 
-<span v-else class="text-gray-500 text-sm">Rated</span>
-
-                </td>
+    <span v-else class="text-gray-500 text-sm">Rated</span>
+    </td>
                 <td class="px-4 py-2"> <button
                     @click="openCheckinCodesModal(ticket)"
-                    class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-indigo-600"
+                    class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 font-bold"
                   >
                     View Codes
                   </button>
@@ -114,7 +115,7 @@
       </div>
     </div>
 
-    <div v-if="showRating" class="fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center z-50">
+    <div v-if="showRating" class="fixed inset-0  bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm relative">
         <button @click="cancelRating" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl">✕</button>
         <h2 class="text-xl font-bold mb-2">Rate Event</h2>
@@ -151,7 +152,7 @@
       </div>
     </div>
 
-    <div v-if="showCheckinCodesModal" class="fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center z-50">
+    <div v-if="showCheckinCodesModal" class="fixed inset-0 backdrop-brightness-50 bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm relative">
         <button @click="closeCheckinCodesModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl">✕</button>
         <h2 class="text-xl font-bold mb-2">Check-in Codes for "{{ currentCheckinEventTitle }}"</h2>
@@ -213,8 +214,7 @@ const { data: profileResponse, pending: pendingProfile, error: errorProfile, ref
 });
 
 const userProfile = computed(() => profileResponse.value);
-console.log('Profile Response:', userProfile.value);
-// --- Local State for Profile Form ---
+
 const form = ref({
   username: '',
   email: '',
@@ -226,9 +226,6 @@ const savingChanges = ref(false);
 const saveError = ref(null);
 const saveSuccess = ref(null);
 
-
-// Watch for changes in userProfile and populate form fields
-// This watch can now safely access userProfile because it's defined above
 watch(userProfile, (newProfile) => {
   if (newProfile) {
     form.value.username = newProfile.username || '';
@@ -247,7 +244,6 @@ watch(userProfile, (newProfile) => {
 }, { immediate: true });
 
 
-// --- Fetch User Tickets ---
 const { data: ticketsResponse, pending: pendingTickets, error: errorTickets, refresh: refreshTickets } = useFetch(`${config.public.apiUrl}/get-tickets`, {
   headers: {
     'Authorization': `Bearer ${authToken.value}`,
@@ -258,19 +254,16 @@ const { data: ticketsResponse, pending: pendingTickets, error: errorTickets, ref
 });
 const userTickets = computed(() => ticketsResponse.value);
 
-// Helper function to format date for display
 const formatDate = (dateString) => {
   if (!dateString) return '';
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
 };
 
-// Helper for ticket status class (assuming 'bought' is always 'COMPLETED' for display)
 const getStatusClass = (status) => {
   return status === 'bought' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
 };
 
-// --- User Profile Navigation Functions ---
 function goToChangePassword() {
   router.push('/change');
 }
@@ -279,7 +272,6 @@ function goToRecharge() {
   router.push('/recharge');
 }
 
-// --- Handle Profile Image Upload ---
 const handleImageUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
@@ -324,31 +316,28 @@ const saveChanges = async () => {
     return;
   }
 
-  formData.append('_method', 'POST'); // Your Laravel route expects POST for updateInfo
-
+  formData.append('_method', 'POST');
   try {
-    // IMPORTANT: Correct your API endpoint here from `/api/update` to `/api/profile/update-info`
+
     const response = await client(`${config.public.baseUrl}/api/update`, {
-      method: 'POST', // Use POST method as your Laravel route is POST
+      method: 'POST', 
       body: formData,
       credentials: 'include',
       headers: {
-        // Do NOT set Content-Type for FormData, browser sets it automatically with boundary
       }
     });
 
     saveSuccess.value = response.message || 'Profile updated successfully!';
     refreshProfile();
     if (user.value) {
-      user.value.username = response.user_information.username; // Use response.user_information
-      user.value.email = response.user_information.email;     // Use response.user_information
-      user.value.profile_image = response.user_information.profile_image; // Use response.user_information
+      user.value.username = response.user_information.username;
+      user.value.email = response.user_information.email;
+      user.value.profile_image = response.user_information.profile_image;
     }
-    // Clear the file input state after successful upload
     form.value.profile_image = null;
 
   } catch (error) {
-    console.error('Profile update failed:', error);
+
     if (error.response && error.response._data && error.response._data.message) {
       saveError.value = error.response._data.message;
       // Handle validation errors specifically
@@ -365,11 +354,10 @@ const saveChanges = async () => {
   }
 };
 
-// --- Rating Modal State and Functions (from previous update) ---
 const showRating = ref(false);
 const submitting = ref(false);
 const submitError = ref(null);
-const currentEventId = ref(null); // Stores the event_id for the current rating operation
+const currentEventId = ref(null);
 
 const categories = ref([
   { rating_category_id: 1, rating_category_name: 'Experience', current_rating: 0 },
@@ -455,7 +443,7 @@ async function submitRating() {
     refreshTickets(); // Refresh tickets to update 'Rated' status
 
   } catch (error) {
-    console.error('Rating submission failed:', error);
+
     if (error.response && error.response._data && error.response._data.message) {
       submitError.value = error.response._data.message;
     } else {
@@ -469,19 +457,17 @@ async function submitRating() {
 function cancelRating() {
   showRating.value = false;
 }
-const showCheckinCodesModal = ref(false); // Controls visibility of the check-in codes modal
-const currentCheckinCodes = ref([]); // Stores the list of codes for the selected event
-const currentCheckinEventTitle = ref(''); // Stores the title of the event for display
+const showCheckinCodesModal = ref(false); 
+const currentCheckinCodes = ref([]); 
+const currentCheckinEventTitle = ref(''); 
 
 // Function to open the check-in codes modal
 function openCheckinCodesModal(ticket) {
   if (ticket.checkin_codes) {
-    // Split the comma-separated string from the backend into an array
     currentCheckinCodes.value = ticket.checkin_codes.split(',');
     currentCheckinEventTitle.value = ticket.title;
     showCheckinCodesModal.value = true;
   } else {
-    // Should not happen if backend is correctly returning codes
     alert('No check-in codes found for this ticket. Please contact support.');
   }
 }
@@ -489,18 +475,16 @@ function openCheckinCodesModal(ticket) {
 // Function to close the check-in codes modal
 function closeCheckinCodesModal() {
   showCheckinCodesModal.value = false;
-  currentCheckinCodes.value = []; // Clear codes when closing
-  currentCheckinEventTitle.value = ''; // Clear title
+  currentCheckinCodes.value = [];
+  currentCheckinEventTitle.value = '';
 }
 
 // Function to copy a code to clipboard
 const copyCode = async (code) => {
   try {
     await navigator.clipboard.writeText(code);
-    // You could add a small visual feedback here (e.g., a temporary 'Copied!' message)
     alert('Check-in code copied to clipboard!');
   } catch (err) {
-    console.error('Failed to copy text: ', err);
     alert('Failed to copy code. Please copy manually.');
   }
 };

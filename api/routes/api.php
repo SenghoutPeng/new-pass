@@ -78,6 +78,7 @@ Route::prefix('admin')->group(function () {
         Route::patch('/toggle/organization/{org_id}', [AdminController::class, 'toggleOrganizationStatus']);
         Route::put('/update/user/{user_id}', [AdminController::class, 'updateUserInfo']);
         Route::put('/update/organization/{org_id}', [AdminController::class, 'updateOrganizationInfo']);
+        Route::post('/update', [AdminController::class, 'updateInfo']);
 
         // Admin data retrieval
         Route::get('/activity-log', [AdminController::class, 'activityLog']);

@@ -1,8 +1,16 @@
 import tailwindcss from "@tailwindcss/vite";
-
+const backendUrl = 'http://localhost:8000' // Replace with Laravel Server IP without port(eg. http://146.190.87.95)
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
   devtools: { enabled: true },
+   app: {
+    head: {
+       title: 'NewPass',
+      link: [
+       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico'},
+      ],
+    }
+  },
   css: ['~/assets/css/main.css'],
   vite: {
     plugins: [
@@ -20,9 +28,10 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     'nuxt-auth-sanctum'
   ],
+
   sanctum: {
     
-    baseUrl: 'http://localhost:8000', // Replace with Laravel Server IP without port(eg. http://146.190.87.95)
+    baseUrl: backendUrl,
     endpoints: {
       login: '/api/login',
       logout: '/api/logout'
@@ -34,8 +43,8 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      baseUrl: 'http://localhost:8000', // Replace with Laravel Server IP without port(eg. http://146.190.87.95)
-      apiUrl: 'http://localhost:8000/api'  // Replace with Laravel Server IP without port(eg.http://146.190.87.95/api)
+      baseUrl: backendUrl, 
+      apiUrl: `${backendUrl}/api`
     }
   }
 })

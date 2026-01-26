@@ -283,56 +283,64 @@ class OrganizationController extends Controller
 
 
 
-    public function updateProfile(Request $request)
-    {
-        $user = Auth::guard('organization')->user();
-        $orgId = $user->org_id;
+   public function updateProfile(Request $request)
+{
+    $user = Auth::guard('organization-api')->user();
 
-        // Validate incoming data
-        $validator = Validator::make($request->all(), [
-            'org_name'       => 'required|string|max:255',
-            'email'          => 'required|email|max:255',
-            'contact_name'   => 'nullable|string|max:255',
-            'contact_email'  => 'nullable|email|max:255',
-            'contact_phone'  => 'nullable|string|max:20',
-            'profile_image'  => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed.',
-                'errors'  => $validator->errors()
-            ], 422);
-        }
-
-        $org = Organization::where('org_id', $orgId)->first();
-
-        if (!$org) {
-            return response()->json(['message' => 'Organization not found'], 404);
-        }
-
-        // If image is uploaded, handle storing it
-        $profileImagePath = $org->profile_image;
-        if ($request->hasFile('profile_image')) {
-            $file = $request->file('profile_image');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('Organization', $filename, 'public');
-            $profileImagePath = 'Organization/' . $filename;
-        }
-
-        // Update organization
-        $org->update([
-            'org_name'      => $request->org_name,
-            'email'         => $request->email,
-            'contact_name'  => $request->contact_name,
-            'contact_email' => $request->contact_email,
-            'contact_phone' => $request->contact_phone,
-            'profile_image' => $profileImagePath,
-        ]);
-
-        return response()->json([
-            'message' => 'Profile updated successfully.',
-            'organization_information' => $org->fresh()
-        ]);
+    if (!$user) {
+        return response()->json(['message' => 'Unauthorized: Invalid Token'], 401);
     }
+
+    $orgId = $user->org_id;
+
+    // Validate incoming data
+    $validator = Validator::make($request->all(), [
+        'org_name'       => 'nullable|string|max:255',
+        'email'          => 'nullable|email|max:255',
+        'contact_name'   => 'nullable|string|max:255',
+        'contact_email'  => 'nullable|email|max:255',
+        'contact_phone'  => 'nullable|string|max:20',
+        'profile_image'  => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'message' => 'Validation failed.',
+            'errors'  => $validator->errors()
+        ], 422);
+    }
+
+    $org = Organization::where('org_id', $orgId)->first();
+
+    if (!$org) {
+        return response()->json(['message' => 'Organization not found'], 404);
+    }
+
+    // If image is uploaded, handle storing it
+    $profileImagePath = $org->profile_image;
+
+    // NOTE: Use 'hasFile' to check for file uploads
+    if ($request->hasFile('profile_image')) {
+        $file = $request->file('profile_image');
+        $filename = time() . '_' . $file->getClientOriginalName();
+        // Make sure to run: php artisan storage:link
+        $path = $file->storeAs('Organization', $filename, 'public');
+        $profileImagePath = 'Organization/' . $filename;
+    }
+
+    // Update organization
+    $org->update([
+        'org_name'      => $request->org_name ?? $org->org_name,
+        'email'         => $request->email ?? $org->email,
+        'contact_name'  => $request->contact_name ?? $org->contact_name,
+        'contact_email' => $request->contact_email ?? $org->contact_email,
+        'contact_phone' => $request->contact_phone ?? $org->contact_phone,
+        'profile_image' => $profileImagePath,
+    ]);
+
+    return response()->json([
+        'message' => 'Profile updated successfully.',
+        'organization_information' => $org->fresh()
+    ]);
+}
 }

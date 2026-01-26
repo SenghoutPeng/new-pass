@@ -657,6 +657,46 @@ class AdminController extends Controller
         'official_events' => $completedEvents,
         'upcoming_events' => $upcomingEvents,
     ], 200);
+
+
 }
+public function updateInfo(Request $request)
+    {
+        $admin = Auth::guard('admin-api')->user();
+        $adminId = $admin->admin_id;
+
+        $validated = $request->validate([
+            'username' => 'nullable|string|max:255',
+            'email' => ['nullable', 'email', 'max:255', Rule::unique('admin')->ignore($adminId, 'admin_id')],
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp,avif|max:2048'
+        ]);
+        $adminToUpdate = Admin::where('admin_id', $adminId)->first();
+        $profileImagePath = $adminToUpdate->profile_image;
+
+        if ($request->hasFile('profile_image')) {
+        $file = $request->file('profile_image');
+        $filename = time() . '_' . $file->getClientOriginalName();
+        $path = $file->storeAs('Admin', $filename, 'public');
+        $profileImagePath = 'Admin/' . $filename;
+    }
+
+    // Update using the $admin instance directly
+    $admin->update([
+        'username'      => $request->username ?? $admin->username,
+        'email'         => $request->email ?? $admin->email,
+        'profile_image' => $profileImagePath,
+    ]);
+
+
+        activity()
+            ->causedBy($admin)
+            ->withProperties(['admin_id' => $adminId])
+            ->log('Admin updated profile info');
+
+        return response()->json([
+            'message' => 'Profile updated successfully!',
+            'admin_information' => $admin->fresh()
+        ], 200);
+    }
 
 }

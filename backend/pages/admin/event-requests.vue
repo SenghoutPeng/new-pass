@@ -56,7 +56,7 @@
       </div>
 
       <div v-if="selectedEvent" class="mt-8 p-6 bg-gray-50 rounded-xl border border-gray-200">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Event Details</h2>
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Event Details:</h2>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="space-y-3 text-gray-700 text-sm">
             <p><strong>Title:</strong> {{ selectedEvent.title }}</p>
@@ -64,8 +64,8 @@
             <p><strong>Date:</strong> {{ selectedEvent.created_at }}</p>
             <p><strong>Location:</strong> {{ selectedEvent.location }}</p>
             <div class="mt-4 flex gap-2">
-              <button class="btn btn-success btn-sm" @click="submitDecision('approved')">Approve</button>
-              <button class="btn btn-error btn-sm" @click="submitDecision('rejected')">Reject</button>
+              <button class="btn btn-success btn-sm text-white font-bold bg-green-600 hover:bg-green-700" @click="submitDecision('approved')">Approve</button>
+              <button class="btn btn-error btn-sm text-white font-bold bg-red-600 hover:bg-red-700" @click="submitDecision('rejected')">Reject</button>
             </div>
           </div>
 

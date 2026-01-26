@@ -6,7 +6,8 @@
   </html>
 </template>
 
-<style setup>
-
-  
-</style>
+<script setup lang="ts">
+useHead({
+  title: 'NewPass',
+})
+</script>

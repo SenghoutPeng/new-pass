@@ -1,17 +1,17 @@
 <template>
-  <div class="min-h-screen bg-gray-900 flex items-center justify-center">
-    <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
+  <div class="min-h-screen bg-white flex items-center justify-center">
+    <div class="bg-white rounded-lg border border-gray-300 p-8 w-full max-w-md">
       <h1 class="text-2xl font-bold text-gray-800 mb-2">Change Password</h1>
       <p class="text-sm text-gray-600 mb-6">Your password has expired, please choose a new password</p>
 
       <!-- Old Password -->
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Old Password:</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">*Old Password:</label>
         <div class="relative">
           <input
             v-model="oldPassword"
             :type="showOld ? 'text' : 'password'"
-            class="w-full border rounded-lg px-4 py-2 pr-10 bg-gray-100"
+            class="w-full border rounded-lg px-4 py-2 pr-10 "
           />
           <button
             @click="showOld = !showOld"
@@ -36,7 +36,7 @@
           <input
             v-model="newPassword"
             :type="showNew ? 'text' : 'password'"
-            class="w-full border rounded-lg px-4 py-2 pr-10 bg-blue-50"
+            class="w-full border rounded-lg px-4 py-2 pr-10"
           />
           <button
             @click="showNew = !showNew"
@@ -60,7 +60,7 @@
           <input
             v-model="confirmPassword"
             :type="showConfirm ? 'text' : 'password'"
-            class="w-full border rounded-lg px-4 py-2 pr-10 bg-blue-50"
+            class="w-full border rounded-lg px-4 py-2 pr-10"
           />
           <button
             @click="showConfirm = !showConfirm"
@@ -80,7 +80,7 @@
       <!-- Submit Button -->
       <button
         @click="submit"
-        class="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 rounded-lg"
+        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg"
       >
         Confirm
       </button>

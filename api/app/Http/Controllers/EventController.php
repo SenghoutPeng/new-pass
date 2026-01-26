@@ -140,6 +140,7 @@ public function getAllOnGoingEvents(Request $request)
                 'description' => $event->description,
                 'location' => $event->location,
                 'event_category_id' => $event->event_category_id,
+                'event_category_name' =>$event->eventCategory->event_category_name,
                 'status' => $event->status,
                 'banner' => $event->banner,
                 'dates' => $eventFormattedDates,

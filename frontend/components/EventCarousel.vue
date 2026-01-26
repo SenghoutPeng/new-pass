@@ -11,7 +11,7 @@
             v-for="event in events"
             :key="event.event_id"
             :to="`/events/${event.event_id}`"
-            class="flex-shrink-0 w-[492px] h-[296px] bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 cursor-pointer mx-2"
+            class="flex-shrink-0 w-[492px] h-[296px] bg-white rounded-lg border border-gray-300 overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 cursor-pointer mx-2"
           >
             <img :src="event.banner ? `${config.public.baseUrl}/storage/${event.banner}` : 'https://images.unsplash.com/photo-1522158637959-30385a09e0da?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'" :alt="event.title" class="w-full h-[160px] object-cover">
             <div class="p-4">
@@ -30,7 +30,7 @@
 
         <button
           @click="prevSlide"
-          class="absolute left-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          class="absolute left-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full border border-gray-300 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
           v-if="events.length > 0"
         >
           <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -39,7 +39,7 @@
         </button>
         <button
           @click="nextSlide"
-          class="absolute right-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          class="absolute right-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full border border-gray-300 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
           v-if="events.length > 0"
         >
           <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">

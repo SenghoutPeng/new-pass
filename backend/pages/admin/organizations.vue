@@ -214,9 +214,6 @@
             <button type="button" class="btn" @click="closeEditModal">Cancel</button>
           </div>
         </form>
-        <form method="dialog" class="modal-backdrop">
-          <button @click="closeEditModal" class="btn btn-error bg-blue-600">Close</button>
-        </form>
       </dialog>
     </div>
   </div>

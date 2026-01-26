@@ -7,11 +7,11 @@
 
         <!-- Overview Cards -->
         <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div class="bg-green-50 p-6 rounded-lg shadow-md">
+          <div class="bg-white p-6 rounded-lg shadow-md">
             <p class="text-gray-700 text-lg">Total Gross Sales</p>
             <p class="text-3xl font-bold text-green-700 mt-2">${{ totalGross }}</p>
           </div>
-          <div class="bg-blue-50 p-6 rounded-lg shadow-md">
+          <div class="bg-white p-6 rounded-lg shadow-md">
             <p class="text-gray-700 text-lg">Total Net Revenue</p>
             <p class="text-3xl font-bold text-blue-700 mt-2">${{ totalNet }}</p>
           </div>
