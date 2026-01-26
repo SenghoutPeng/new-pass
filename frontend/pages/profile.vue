@@ -276,7 +276,6 @@ const handleImageUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
     form.value.profile_image = file;
-    // Create a preview URL
     const reader = new FileReader();
     reader.onload = (e) => {
       profileImagePreview.value = e.target.result;
@@ -284,7 +283,6 @@ const handleImageUpload = (event) => {
     reader.readAsDataURL(file);
   } else {
     form.value.profile_image = null;
-    // This line also relies on userProfile being defined
     profileImagePreview.value = userProfile.value?.profile_image
       ? `${userProfile.value.profile_image}`
       : 'https://i.pravatar.cc/60';

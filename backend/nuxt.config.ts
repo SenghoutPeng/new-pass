@@ -43,7 +43,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      baseUrl: backendUrl, 
+      baseUrl: backendUrl,
       apiUrl: `${backendUrl}/api`
     }
   }

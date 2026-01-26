@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Event;
@@ -255,54 +256,53 @@ class UserController extends Controller
 
 
 
-    public function updateInfo(Request $request)
-    {
-        $user = Auth::user();
-        $userId = $user->user_id;
+   public function updateInfo(Request $request)
+{
+    $user = Auth::user();
 
-        $validated = $request->validate([
-            'username' => 'string|max:255',
-            'email' => ['sometimes', 'email', 'max:255', Rule::unique('user')->ignore($userId, 'user_id')],
-            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp,avif|max:2048'
-        ]);
-
-        $updateData = [];
-
-        if (isset($validated['username'])) {
-            $updateData['username'] = $validated['username'];
-        }
-        if (isset($validated['email'])) {
-            $updateData['email'] = $validated['email'];
-        }
-
-        if ($request->hasFile('profile_image')) {
-            $file = $request->file('profile_image');
-            $filename = 'user_' . $userId . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('profile_images', $filename, 'public');
-            $updateData['profile_image'] = $path;
-
-            // Optional: Delete old profile image if it exists
-            if ($user->profile_image) {
-                Storage::disk('public')->delete($user->profile_image);
-            }
-        }
-
-        if (!empty($updateData)) {
-            $user->update($updateData);
-
-            activity()
-                ->causedBy($user)
-                ->withProperties(['user_id' => $userId])
-                ->log('User updated profile info');
-
-            return response()->json([
-                'message' => 'Profile updated successfully!',
-                'user_information' => $user->fresh()
-            ], 200);
-        }
-
-        return response()->json([
-            'message' => 'No changes submitted.',
-        ], 200);
+    if (!$user) {
+        return response()->json(['message' => 'User not found'], 404);
     }
+
+    $userId = $user->user_id;
+
+    $validator = Validator::make($request->all(), [
+        'username'      => 'nullable|string|max:255',
+        'email'         => ['nullable', 'email', 'max:255', Rule::unique('user')->ignore($userId, 'user_id')],
+        'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp,avif|max:2048'
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'message' => 'Validation failed.',
+            'errors' => $validator->errors()
+        ], 422);
+    }
+
+    $profileImagePath = $user->profile_image;
+
+    if ($request->hasFile('profile_image')) {
+        $file = $request->file('profile_image');
+        $filename = time() . '_' . $file->getClientOriginalName();
+        $path = $file->storeAs('profile_images', $filename, 'public');
+        $profileImagePath = 'profile_images/' . $filename;
+    }
+
+
+    $user->update([
+        'username'      => $request->username ?? $user->username,
+        'email'         => $request->email ?? $user->email,
+        'profile_image' => $profileImagePath,
+    ]);
+
+    activity()
+        ->causedBy($user)
+        ->withProperties(['user_id' => $userId])
+        ->log('User updated profile info');
+
+    return response()->json([
+        'message' => 'Profile updated successfully!',
+        'user_information' => $user->fresh()
+    ], 200);
+}
 }
