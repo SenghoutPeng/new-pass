@@ -149,7 +149,7 @@
         
         <div class="p-6">
           <div class="flex flex-col md:flex-row gap-6 mb-6">
-              <img :src="selectedEvent.banner ? `http://localhost:8000/storage/${selectedEvent.banner}` : 'https://placehold.co/600x400'"
+              <img :src="selectedEvent.banner ? `${config.public.baseUrl}/storage/${selectedEvent.banner}` : 'https://placehold.co/600x400'"
                  class="w-full md:w-1/2 h-64 object-cover rounded-lg" alt="Event banner">
             <div>
               <h2 class="text-2xl font-bold mb-2">{{ selectedEvent.title }}</h2>
