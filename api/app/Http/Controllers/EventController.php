@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class EventController extends Controller
 {
@@ -357,7 +358,7 @@ public function getAllOnGoingEvents(Request $request)
 
         $filename = 'org_' . $orgId . '_' . time() . '.' . $banner->getClientOriginalExtension();
 
-        $bannerPath = $banner->storeAs('banners', $filename, 'public');
+        $bannerPath = Storage::putFileAs('banners', $banner, $filename);
 
 
 

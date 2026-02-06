@@ -303,7 +303,7 @@ class AdminController extends Controller
         if ($request->hasFile('banner')) {
             $file = $request->file('banner');
             $filename = 'event_' . $request->event_id . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('banners', $filename, 'public');
+            $path = Storage::putFileAs('banners', $file, $filename);
             $event->banner = $path;
         }
 
@@ -435,12 +435,12 @@ class AdminController extends Controller
         if ($request->hasFile('profile_image')) {
             $file = $request->file('profile_image');
             $filename = 'user_' . $userId . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('users', $filename, 'public');
+            $path = Storage::putFileAs('users', $file, $filename);
 
             $validatedData['profile_image'] = $path;
 
-            if ($userToUpdate->profile_image && Storage::disk('public')->exists($userToUpdate->profile_image)) {
-                Storage::disk('public')->delete($userToUpdate->profile_image);
+            if ($userToUpdate->profile_image && Storage::exists($userToUpdate->profile_image)) {
+                Storage::delete($userToUpdate->profile_image);
             }
         } else {
             unset($validatedData['profile_image']);
@@ -517,7 +517,7 @@ class AdminController extends Controller
         if ($request->hasFile('profile_image')) {
             $file = $request->file('profile_image');
             $filename = 'org_' . $organizationId . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('organizations', $filename, 'public');
+            $path = Storage::putFileAs('organizations', $file, $filename);
             $validated['profile_image'] = $path;
         }
 

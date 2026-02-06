@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class OrganizationController extends Controller
 {
@@ -311,7 +312,7 @@ class OrganizationController extends Controller
         if ($request->hasFile('profile_image')) {
             $file = $request->file('profile_image');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('Organization', $filename, 'public');
+            $path = Storage::putFileAs('Organization', $file, $filename);
             $profileImagePath = 'Organization/' . $filename;
         }
 

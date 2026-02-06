@@ -1,13 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
 use App\Models\Organization;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-
 
 class OrganizationAuthController extends Controller
 {
@@ -152,4 +151,3 @@ class OrganizationAuthController extends Controller
 
 
 }
-
