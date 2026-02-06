@@ -67,7 +67,7 @@ class EventController extends Controller
                 'location' => $event->location,
                 'event_category_id' => $event->event_category_id,
                 'status' => $event->status,
-                'banner' => $event->banner,
+                'banner' => Storage::url($event->banner),
                 'dates' => $eventFormattedDates,
             ];
         }
@@ -155,7 +155,7 @@ public function getAllOnGoingEvents(Request $request)
                 'location' => $event->location,
                 'event_category_id' => $event->event_category_id,
                 'status' => $event->status,
-                'banner' => $event->banner,
+                'banner' => Storage::url($event->banner),
                 'dates' => $eventFormattedDates,
             ];
         }
@@ -222,7 +222,7 @@ public function getAllOnGoingEvents(Request $request)
                 'location' => $event->location,
                 'event_category_id' => $event->event_category_id,
                 'status' => $event->status,
-                'banner' => $event->banner,
+                'banner' => Storage::url($event->banner),
                 'dates' => $eventFormattedDates,
             ];
         }
@@ -284,6 +284,8 @@ public function getAllOnGoingEvents(Request $request)
             ->where('event.event_id', $eventId)
             ->where('organization.status', true)
             ->first();
+
+        $eventDetail->banner = Storage::url($eventDetail->banner);
 
         if (!$eventDetail) {
             return response()->json(['message' => 'Event not found'], 404);
@@ -418,8 +420,10 @@ public function getAllOnGoingEvents(Request $request)
 
         $eventRequest = DB::table('event')
             ->where('event_id', $event_id)
-            ->select('event_id','title', 'description', 'location','created_at', DB::raw("CONCAT('" . url('/') . "/storage/', event.banner) as banner_url"))
+            ->select('event_id', 'title', 'description', 'location','created_at', 'banner')
             ->first();
+
+        $eventRequest->banner_url = Storage::url($eventRequest->banner);
 
         if (!$eventRequest) {
             return response()->json(['message' => 'Event request not found'], 404);

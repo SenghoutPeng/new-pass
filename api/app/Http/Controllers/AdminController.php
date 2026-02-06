@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Models\Event;
 use App\Models\User;
+use App\Models\Admin;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Organization;
 
@@ -36,9 +37,9 @@ class AdminController extends Controller
 
         $organizationList = $organizationList->map(function ($org) {
         if ($org->profile_image && $org->profile_image !== '') {
-            $org->profile_image = url('storage/' . $org->profile_image);
+            $org->profile_image = Storage::url($org->profile_image);
         } else {
-            $org->profile_image = url('storage/Organization/default.png');
+            $org->profile_image = Storage::url('Organization/default.png');
         }
         return $org;
     });
@@ -70,9 +71,9 @@ class AdminController extends Controller
 
         $userList = $userList->map(function ($user) {
             if (empty($user->profile_image)) {
-                $user->profile_image = url('storage/User/default.png');
+                $user->profile_image = Storage::url('User/default.png');
             } else {
-                $user->profile_image = url('storage/' . $user->profile_image);
+                $user->profile_image = Storage::url($user->profile_image);
             }
             return $user;
         });
@@ -228,8 +229,8 @@ class AdminController extends Controller
         $admin = Auth::guard('admin-api')->user();
         $adminId = $admin->admin_id;
 
-        $adminInfo = DB::table('admin')->where('admin_id', $adminId)->first();
-        $adminInfo->profile_image = asset('storage/' . $adminInfo->profile_image); // Will auto-resolve to http://yourdomain.com/storage/Admin/admin20.png
+        $adminInfo = Admin::where('admin_id', $adminId)->first();
+        $adminInfo->profile_image = Storage::url($adminInfo->profile_image); // Will auto-resolve to http://yourdomain.com/storage/Admin/admin20.png
 
         return response()->json([
             'admin_information' => $adminInfo
@@ -617,7 +618,7 @@ class AdminController extends Controller
                 'event_category_id' => $event->event_category_id,
                 'event_category_name' =>$event->event_category_name,
                 'status' => $event->status,
-                'banner' => $event->banner,
+                'banner' => Storage::url($event->banner),
                 'first_event_day' => $firstDay,
                 'last_event_day' => $lastDay,
                 'dates' => $eventFormattedDates

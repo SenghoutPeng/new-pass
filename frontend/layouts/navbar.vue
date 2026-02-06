@@ -108,12 +108,12 @@ const profileImage = computed(() => {
   if (userType.value === 'organization') {
     return profile.value?.profile_image
       ? `${profile.value.profile_image}`
-      : `${config.public.baseUrl}/storage/Organization/default.png`;
+      : ``;
   }
   else if (userType.value === 'user' || userType.value == null) {
     return profile.value?.profile_image
       ? `${profile.value.profile_image}`
-      : `${config.public.baseUrl}/storage/User/default.png`;
+      : ``;
   }
 });
 

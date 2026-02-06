@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Organization;
 
 class OrganizationController extends Controller
 {
@@ -258,14 +259,14 @@ class OrganizationController extends Controller
         // Get the logged in organization's id
         $organizationId = $organization->org_id;
         // Get the logged in organization's info
-        $organizationInfo = DB::table('organization')->where('org_id',$organizationId)->first();
+        $organizationInfo = Organization::where('org_id',$organizationId)->first();
         // Count the number of events created by the organization
         $eventCount = DB::table('event')->where('org_id', $organizationId)->count();
 
     if ($organizationInfo) {
         $organizationInfo->profile_image = $organizationInfo->profile_image
-            ? asset('storage/' . $organizationInfo->profile_image)
-            : asset('storage/Organization/default.png');
+            ? Storage::url($organizationInfo->profile_image)
+            : Storage::url('Organization/default.png');
     }
 
         // Return a proper JSON response (as key-value)

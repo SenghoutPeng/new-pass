@@ -220,12 +220,12 @@ class UserController extends Controller
             // Get the logged in user's id
             $userId = $user->user_id;
             // Get the logged in user's information
-            $userInfo = DB::table('user')->where('user_id', $userId)->first();
+            $userInfo = User::where('user_id', $userId)->first();
 
             if ($userInfo) {
                 $userInfo->profile_image = $userInfo->profile_image
-            ? asset('storage/' . $userInfo->profile_image)
-            : asset('storage/User/default.png');
+            ? Storage::url($userInfo->profile_image)
+            : Storage::url('User/default.png');
             }
             $totalSpending = DB::table('ticket')
             ->where('user_id', $userId)

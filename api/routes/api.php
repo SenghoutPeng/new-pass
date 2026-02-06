@@ -16,7 +16,7 @@ Route::get('/health', function() {
     return response()->json([
         'message' => "API is up"
     ], 200);
-}
+});
 
 // User routes
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

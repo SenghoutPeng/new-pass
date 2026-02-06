@@ -230,16 +230,7 @@ watch(userProfile, (newProfile) => {
   if (newProfile) {
     form.value.username = newProfile.username || '';
     form.value.email = newProfile.email || '';
-    // Check if profile_image is already a full URL
-    if (newProfile.profile_image) {
-      if (newProfile.profile_image.startsWith('http')) {
-        profileImagePreview.value = newProfile.profile_image;
-      } else {
-        profileImagePreview.value = `/storage/${newProfile.profile_image}`;
-      }
-    } else {
-      profileImagePreview.value = '/storage/User/default.png';
-    }
+    profileImagePreview.value = newProfile.profile_image;
   }
 }, { immediate: true });
 
