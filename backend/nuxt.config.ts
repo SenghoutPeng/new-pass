@@ -1,5 +1,5 @@
 import tailwindcss from "@tailwindcss/vite";
-const backendUrl = 'http://localhost:8000' // Replace with Laravel Server IP without port(eg. http://146.190.87.95)
+const backendUrl = process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8000' // Replace with Laravel Server IP without port(eg. http://146.190.87.95)
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
   devtools: { enabled: true },
