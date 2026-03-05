@@ -21,6 +21,7 @@
     "@tailwindcss/vite": "^4.1.8",
     "@unhead/vue": "^2.0.10",
     "axios": "^1.10.0",
+    "better-sqlite3": "^12.6.2",
     "eslint": "^9.28.0",
     "nuxt": "^3.17.5",
     "nuxt-auth-sanctum": "^0.6.7",
@@ -34,5 +35,8 @@
     "daisyui": "^5.0.46",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.10"
+  },
+  "overrides": {
+    "serialize-javascript": "7.0.3"
   }
 }
