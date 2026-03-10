@@ -313,8 +313,11 @@ class OrganizationController extends Controller
         if ($request->hasFile('profile_image')) {
             $file = $request->file('profile_image');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $path = Storage::putFileAs('Organization', $file, $filename);
-            $profileImagePath = 'Organization/' . $filename;
+            $profileImagePath = Storage::putFileAs('Organization', $file, $filename);
+
+            if ($profileImagePath && $profileImagePath != "Organization/default.png") {
+                Storage::delete($profileImagePath);
+            }
         }
 
         // Update organization

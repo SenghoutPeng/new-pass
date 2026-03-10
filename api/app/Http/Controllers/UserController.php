@@ -270,11 +270,11 @@ class UserController extends Controller
             if ($request->hasFile('profile_image')) {
                 $file = $request->file('profile_image');
                 $filename = 'user_' . $userId . '_' . time() . '.' . $file->getClientOriginalExtension(); // Changed 'org' to 'user' for clarity
-                $path = Storage::putFileAs('profile_images', $file, $filename); // Changed folder name for clarity
+                $path = Storage::putFileAs('User', $file, $filename); // Changed folder name for clarity
                 $updateData['profile_image'] = $path;
 
                 // Optional: Delete old profile image if it exists
-                if ($user->profile_image) {
+                if ($user->profile_image && $user->profile_image != "User/default.png") {
                     Storage::delete($user->profile_image);
                 }
             }

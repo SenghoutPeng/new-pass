@@ -436,11 +436,11 @@ class AdminController extends Controller
         if ($request->hasFile('profile_image')) {
             $file = $request->file('profile_image');
             $filename = 'user_' . $userId . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $path = Storage::putFileAs('users', $file, $filename);
+            $path = Storage::putFileAs('Admin', $file, $filename);
 
             $validatedData['profile_image'] = $path;
 
-            if ($userToUpdate->profile_image && Storage::exists($userToUpdate->profile_image)) {
+            if ($userToUpdate->profile_image && $userToUpdate->profile_image != "Admin/default.png") {
                 Storage::delete($userToUpdate->profile_image);
             }
         } else {
@@ -515,15 +515,20 @@ class AdminController extends Controller
             'profile_image'  => 'image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
+        $organization = Organization::find('org_id', $organizationId);
 
         if ($request->hasFile('profile_image')) {
             $file = $request->file('profile_image');
             $filename = 'org_' . $organizationId . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $path = Storage::putFileAs('organizations', $file, $filename);
+            $path = Storage::putFileAs('Organization', $file, $filename);
             $validated['profile_image'] = $path;
+
+            if ($organization->profile_image && $organization->profile_image != "Organization/default.png") {
+                Storage::delete($organization->profile_image);
+            }
         }
 
-        Organization::where('org_id', $organizationId)->update($validated);
+        Organization::where('org_id', $organizationId)->update($validated)
         $organization = Organization::where('org_id',$organizationId)->first();
         $organization->profile_image = Storage::url($organization->profile_image);
         activity()
