@@ -348,7 +348,7 @@ public function getAllOnGoingEvents(Request $request)
             'banner' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp,avif|max:2048',
             'dates' => 'required|array|min:1|max:3',
             'dates.*.event_date' => 'required|date|after:today',
-            'dates.*.event_time' => 'required|date_format:H:i',
+            'dates.*.event_time' => 'required|date_format:H:i:s',
             'dates.*.ticket_price' => 'required|numeric|min:0',
             'dates.*.total_ticket' => 'required|integer|min:1'
         ]);

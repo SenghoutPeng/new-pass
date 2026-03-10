@@ -266,7 +266,7 @@ class AdminController extends Controller
             $validate['dates'] = 'array|min:1';
             $validate['dates.*.event_date_id'] = 'exists:event_date,event_date_id';
             $validate['dates.*.event_date'] = 'after_or_equal:today';
-            $validate['dates.*.event_time'] = 'date_format:H:i';
+            $validate['dates.*.event_time'] = 'date_format:H:i:s';
             $validate['dates.*.ticket_price'] = 'numeric|min:0';
             $validate['dates.*.total_ticket'] = 'integer|min:1';
         } elseif ($event->status === 'approved') {
