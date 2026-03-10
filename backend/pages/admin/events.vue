@@ -517,7 +517,7 @@ const updateEvent = async () => {
               formData.append(`dates[${index}][event_date_id]`, date.event_date_id);
           }
           formData.append(`dates[${index}][event_date]`, date.event_date);
-          formData.append(`dates[${index}][event_time]`, date.event_time);
+          formData.append(`dates[${index}][event_time]`, date.event_time + ':00');
           formData.append(`dates[${index}][ticket_price]`, date.ticket_price);
           formData.append(`dates[${index}][total_ticket]`, date.total_ticket);
       }
