@@ -7,6 +7,7 @@ use App\Models\User;
 use Laravel\Sanctum\TransientToken;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
@@ -60,6 +61,7 @@ class AuthController extends Controller
             return response()->json(['message' => 'Your account is disabled. Please contact support.'], 403);
         }
 
+        $user->profile_picture = Storage::url($user->profile_picture);
         $token = $user->createToken('user-login-token')->plainTextToken;
 
         activity()
@@ -144,4 +146,3 @@ class AuthController extends Controller
         return response()->json(['message' => 'Password updated successfully'], 200);
     }
 }
-

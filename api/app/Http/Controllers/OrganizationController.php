@@ -327,10 +327,12 @@ class OrganizationController extends Controller
             'profile_image' => $profileImagePath,
             'updated_at'    => now(),
         ]);
+        $organization = DB::table('organization')->where('org_id', $orgId)->first();
+        $organizaiton->profile_image = Storage::url($organization->profile_image);
 
         return response()->json([
             'message' => 'Profile updated successfully.',
-            'organization_information' => DB::table('organization')->where('org_id', $orgId)->first()
+            'organization_information' => $organization
         ]);
     }
 }

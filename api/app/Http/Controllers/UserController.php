@@ -287,9 +287,12 @@ class UserController extends Controller
                     ->withProperties(['user_id' => $userId])
                     ->log('User updated profile info');
 
+                $user = $user->fresh();
+                $user->profile_image = Storage::url($user->profile_image);
+
                 return response()->json([
                     'message' => 'Profile updated successfully!',
-                    'user_information' => $user->fresh()
+                    'user_information' => $user
                 ], 200);
             }
 

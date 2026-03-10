@@ -455,6 +455,7 @@ class AdminController extends Controller
             ->log('Admin updated user profile');
 
         $user = User::where('user_id',$userId)->first();
+        $user->profile_image = Storage::url($user->profile_image);
 
         return response()->json([
             'message' => 'Updated Successfully',
@@ -524,6 +525,7 @@ class AdminController extends Controller
 
         Organization::where('org_id', $organizationId)->update($validated);
         $organization = Organization::where('org_id',$organizationId)->first();
+        $organization->profile_image = Storage::url($organization->profile_image);
         activity()
             ->causedBy(Auth::guard('admin-api')->user())
             ->log('Admin upated organization profile');
@@ -572,11 +574,18 @@ class AdminController extends Controller
             ->where(DB::raw("CONCAT(event_date.event_date, ' ', event_date.event_time)"), '<=', now())
             ->get();
 
+        foreach ($completedEvents as $event) {
+            $event->banner = Storage::url($event->banner);
+        }
 
         $upcomingEvents = $upcomingQuery
             ->where('event.status','approved')
             ->where(DB::raw("CONCAT(event_date.event_date, ' ', event_date.event_time)"), '>', now())
             ->get();
+
+        foreach ($upcomingEvents as $event) {
+            $event->banner = Storage::url($event->banner);
+        }
 
         $eventIds = $events->pluck('event_id')->toArray();
 

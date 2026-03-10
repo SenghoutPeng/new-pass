@@ -5,8 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Admin;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
-use App\Models\Organization;
+use Illuminate\Support\Facades\Storage;
 
 class AdminAuthController extends Controller
 {
@@ -27,6 +26,7 @@ class AdminAuthController extends Controller
             ], 401);
         }
         $admin = Auth::guard('admin')->user();
+        $admin->profile_picture = Storage::url($admin->profile_picture);
 
         $token = $auth->createToken('mytoken')->plainTextToken;
 

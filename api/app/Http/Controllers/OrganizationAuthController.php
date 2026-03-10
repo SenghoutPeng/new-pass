@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Organization;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class OrganizationAuthController extends Controller
 {
@@ -72,6 +73,8 @@ class OrganizationAuthController extends Controller
         {
             return response()->json(['message' => 'Your account is disabled. Please contact support.'], 403);
         }
+
+        $organization->profile_picture = Storage::url($organization->profile_picture);
 
         // Create new token
         $token = $organization->createToken('mytoken')->plainTextToken;
