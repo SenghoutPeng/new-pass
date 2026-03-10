@@ -61,7 +61,6 @@ class AuthController extends Controller
             return response()->json(['message' => 'Your account is disabled. Please contact support.'], 403);
         }
 
-        if
         $user->profile_image = Storage::url($user->profile_image);
         $token = $user->createToken('user-login-token')->plainTextToken;
 
