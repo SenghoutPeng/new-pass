@@ -531,7 +531,7 @@ class AdminController extends Controller
             }
         }
 
-        Organization::where('org_id', $organizationId)->update($validated)
+        Organization::where('org_id', $organizationId)->update($validated);
         $organization = Organization::where('org_id',$organizationId)->first();
         $organization->profile_image = Storage::url($organization->profile_image);
         activity()
