@@ -74,7 +74,7 @@ class OrganizationAuthController extends Controller
             return response()->json(['message' => 'Your account is disabled. Please contact support.'], 403);
         }
 
-        $organization->profile_picture = Storage::url($organization->profile_picture);
+        $organization->profile_image = Storage::url($organization->profile_image);
 
         // Create new token
         $token = $organization->createToken('mytoken')->plainTextToken;

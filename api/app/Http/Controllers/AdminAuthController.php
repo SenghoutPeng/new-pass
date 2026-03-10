@@ -26,7 +26,7 @@ class AdminAuthController extends Controller
             ], 401);
         }
         $admin = Auth::guard('admin')->user();
-        $admin->profile_picture = Storage::url($admin->profile_picture);
+        $admin->profile_image = Storage::url($admin->profile_image);
 
         $token = $auth->createToken('mytoken')->plainTextToken;
 
