@@ -305,6 +305,7 @@ class AdminController extends Controller
             $file = $request->file('banner');
             $filename = 'event_' . $request->event_id . '_' . time() . '.' . $file->getClientOriginalExtension();
             $path = Storage::putFileAs('banners', $file, $filename);
+            Storage::delete($event->banner);
             $event->banner = $path;
         }
 
