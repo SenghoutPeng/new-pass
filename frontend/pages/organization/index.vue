@@ -107,7 +107,7 @@ const fetchBuyers = async () => {
 // Fetch the logged-in organization's events
 const fetchEventList = async () => {
   try {
-    const response = await fetch('http://localhost:8000/api/organization/events', {
+    const response = await fetch(`${config.public.baseUrl}/api/organization/events`, {
       credentials: 'include',
     })
 

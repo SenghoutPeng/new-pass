@@ -186,7 +186,7 @@ const handleCancel = () => {
 
 const fetchCsrfToken = async () => {
   try {
-    const res = await fetch('http://localhost:8000/sanctum/csrf-cookie', {
+    const res = await fetch(`${config.public.baseUrl}/sanctum/csrf-cookie`, {
       method: 'GET',
       credentials: 'include',
     });
