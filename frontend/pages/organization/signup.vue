@@ -195,13 +195,13 @@ const handleSignUp = async () => {
         password: FormData.value.password
       },
       credentials: 'include'
-      
+
 
     })
     localStorage.setItem('org_token', response.token)
-    
-    await navigateTo('/organization/dashboard')
-    
+
+    await navigateTo('/organization')
+
     location.reload()
   } catch (err) {
     console.error('Signup/Login Error:', err)
