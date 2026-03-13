@@ -518,7 +518,7 @@ class AdminController extends Controller
             'profile_image'  => 'image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-        $organization = Organization::find('org_id', $organizationId);
+        $organization = Organization::find($organizationId);
 
         if ($request->hasFile('profile_image')) {
             $file = $request->file('profile_image');
