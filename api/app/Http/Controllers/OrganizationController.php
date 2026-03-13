@@ -214,12 +214,14 @@ class OrganizationController extends Controller
         }
 
         // Combine event date and time
-        $eventDateTime = Carbon::parse($eventDate->event_date . ' ' . $eventDate->event_time);
-        $now = Carbon::now();
+        $eventDateTime = Carbon::parse($eventDate->event_date . ' ' . $eventDate->event_time)->setTimezone(env('APP_TIMEZONE'));
+        $now = Carbon::now(env('APP_TIMEZONE'));
 
         // Allow check-in only if event is today and event time has not passed
         if (!$eventDateTime->isToday() || $eventDateTime->lessThan($now)) {
             return response()->json([
+                'now' => $now,
+                'event' => $eventDateTime,
                 'message' => 'Check-in is not allowed. The event is not today or the time has passed.'
             ], 403);
         }
