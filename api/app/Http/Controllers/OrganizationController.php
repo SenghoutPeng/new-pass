@@ -214,8 +214,8 @@ class OrganizationController extends Controller
         }
 
         // Combine event date and time
-        $eventDateTime = Carbon::parse($eventDate->event_date . ' ' . $eventDate->event_time)->setTimezone('Asia/Phnom_Penh');
-        $now = Carbon::now('Asia/Phnom_Penh');
+        $eventDateTime = Carbon::parse($eventDate->event_date . ' ' . $eventDate->event_time);
+        $now = Carbon::now();
 
         // Allow check-in only if event is today and event time has not passed
         if (!$eventDateTime->isToday() || $eventDateTime->lessThan($now)) {
